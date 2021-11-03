@@ -1,5 +1,5 @@
 {
-  "name": "game-worker/kiri-kafka",
+  "name": "game-worker/kiri-message",
   "description": "kafka",
   "authors": [
     {
