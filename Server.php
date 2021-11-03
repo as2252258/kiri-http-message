@@ -9,7 +9,6 @@ use Http\Abstracts\EventDispatchHelper;
 use Http\Abstracts\ExceptionHandlerInterface;
 use Http\Abstracts\ResponseHelper;
 use Http\Constrict\RequestInterface;
-use Http\Constrict\ResponseEmitter;
 use Http\Constrict\ResponseInterface;
 use Http\Handler\Abstracts\HandlerManager;
 use Http\Handler\Dispatcher;
