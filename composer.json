@@ -23,6 +23,5 @@
      }
   },
   "require-dev": {
-    "kwn/php-rdkafka-stubs": "^2.0"
   }
 }
