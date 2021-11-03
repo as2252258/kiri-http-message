@@ -8,11 +8,11 @@
     }
   ],
   "license": "MIT",
-  "composer-runtime-api": "^2.0",
   "require": {
     "php": ">=8.0",
     "ext-json": "*",
     "ext-rdkafka": "*",
+    "composer-runtime-api": "^2.0",
     "psr/http-server-middleware": "^1.0",
     "psr/http-message": "^1.0",
     "psr/event-dispatcher": "^1.0",
