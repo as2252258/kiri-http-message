@@ -4,12 +4,11 @@ namespace Http\Handler;
 
 use Annotation\Aspect;
 use Closure;
+use Http\Aspect\JoinPoint;
+use Http\Aspect\OnAspectInterface;
 use Http\Handler\Abstracts\MiddlewareManager;
 use Kiri\Di\NoteManager;
-use Kiri\Events\EventProvider;
-use Kiri\IAspect;
 use Kiri\Kiri;
-use Server\Events\OnAfterWorkerStart;
 
 class Handler
 {
@@ -24,9 +23,6 @@ class Handler
 	public ?array $params = [];
 
 
-	public IAspect $_aspect;
-
-
 	public ?array $_middlewares = [];
 
 
@@ -38,38 +34,31 @@ class Handler
 	public function __construct(string $route, array|Closure $callback)
 	{
 		$this->route = $route;
-
 		$this->_injectParams($callback);
 
-		$this->callback = $callback;
+		$this->_middlewares = MiddlewareManager::get($callback);
+		$aspect = NoteManager::getSpecify_annotation(Aspect::class, $callback[0], $callback[1]);
 
-		$dispatcher = Kiri::getDi()->get(EventProvider::class);
-		$dispatcher->on(OnAfterWorkerStart::class, function () {
-			if ($this->callback instanceof Closure) {
-				return;
-			}
-			$this->_middlewares = MiddlewareManager::get($this->callback);
-
-			$aspect = NoteManager::getSpecify_annotation(Aspect::class, $this->callback[0], $this->callback[1]);
-
-			$this->callback[0] = Kiri::getDi()->get($this->callback[0]);
-			if (!is_null($aspect)) {
-				$this->recover($aspect);
-			}
-		});
+		$callback[0] = Kiri::getDi()->get($callback[0]);
+		if (!is_null($aspect)) {
+			$this->recover($aspect, $callback);
+		} else {
+			$this->callback = $callback;
+		}
 	}
 
 
 	/**
 	 * @param Aspect $aspect
+	 * @param $callback
 	 */
-	public function recover(Aspect $aspect)
+	public function recover(Aspect $aspect, $callback)
 	{
 		$aspect = Kiri::getDi()->get($aspect->aspect);
-		if (empty($aspect)) {
-			return;
+		if ($aspect instanceof OnAspectInterface) {
+			$this->params = [new JoinPoint($callback, $this->params)];
+			$this->callback = [$aspect, 'process'];
 		}
-		$this->_aspect = $aspect;
 	}
 
 
