@@ -254,11 +254,21 @@ class Router
 	{
 		$files = glob($path . '/*');
 		for ($i = 0; $i < count($files); $i++) {
-			if (is_dir($files[$i])) {
-				$this->loadRouteDir($files[$i]);
-			} else {
-				$this->loadRouterFile($files[$i]);
-			}
+			$this->_load($files[$i]);
+		}
+	}
+
+
+	/**
+	 * @param $files
+	 * @throws Exception
+	 */
+	private function _load($files): void
+	{
+		if (!is_dir($files)) {
+			$this->loadRouterFile($files);
+		} else {
+			$this->loadRouteDir($files);
 		}
 	}
 
