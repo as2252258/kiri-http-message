@@ -2,11 +2,12 @@
 
 namespace Http\Handler;
 
+use Annotation\Inject;
 use Closure;
 use Exception;
 use Http\Handler\Abstracts\HandlerManager;
 use Http\Handler\Abstracts\MiddlewareManager;
-use Kiri\Abstracts\Logger;
+use Kiri\Error\Logger;
 use Kiri\Kiri;
 use ReflectionException;
 use Throwable;
@@ -19,6 +20,10 @@ class Router
 
 
 	protected array $methods = ['GET', 'POST', 'HEAD', 'OPTIONS', 'PUT', 'DELETE'];
+
+
+	#[Inject(Logger::class)]
+	public Logger $logger;
 
 
 	/**
@@ -156,18 +161,25 @@ class Router
 	 */
 	public function addRoute(string|array $method, string $route, string|Closure $closure)
 	{
-		if (!is_array($method)) $method = [$method];
-		$route = $this->getPath($route);
-		if (is_string($closure)) {
-			$closure = explode('@', $closure);
-			$closure[0] = $this->addNamespace($closure[0]);
-			if (!class_exists($closure[0])) {
-				return;
+		try {
+			if (!is_array($method)) $method = [$method];
+			$route = $this->getPath($route);
+			if (is_string($closure)) {
+				$closure = explode('@', $closure);
+				$closure[0] = $this->addNamespace($closure[0]);
+				if (!class_exists($closure[0])) {
+					return;
+				}
+				$this->addMiddlewares(...$closure);
 			}
-			$this->addMiddlewares(...$closure);
-		}
-		foreach ($method as $value) {
-			HandlerManager::add($route, $value, new Handler($route, $closure));
+			foreach ($method as $value) {
+				HandlerManager::add($route, $value, new Handler($route, $closure));
+			}
+		} catch (Throwable $throwable) {
+			$this->logger->error($throwable->getMessage(), [
+				'file' => $throwable->getFile(),
+				'line' => $throwable->getLine(),
+			]);
 		}
 	}
 
@@ -279,19 +291,7 @@ class Router
 	 */
 	private function loadRouterFile($files)
 	{
-		try {
-			include_once "$files";
-		} catch (Throwable $exception) {
-			di(Logger::class)->error('router', [
-				$exception->getMessage(),
-				$exception->getFile(),
-				$exception->getLine(),
-			]);
-		} finally {
-			if (isset($exception)) {
-				unset($exception);
-			}
-		}
+		include_once "$files";
 	}
 
 
