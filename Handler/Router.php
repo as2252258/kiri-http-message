@@ -157,7 +157,7 @@ class Router
 	 * @param string|array $method
 	 * @param string $route
 	 * @param string|Closure $closure
-	 * @throws ReflectionException
+	 * @throws
 	 */
 	public function addRoute(string|array $method, string $route, string|Closure $closure)
 	{
