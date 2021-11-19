@@ -35,7 +35,10 @@ class Handler
 	{
 		$this->route = $route;
 		$this->_injectParams($callback);
-
+		if ($callback instanceof Closure) {
+			$this->callback = $callback;
+			return;
+		}
 		$this->_middlewares = MiddlewareManager::get($callback);
 		$aspect = NoteManager::getSpecify_annotation(Aspect::class, $callback[0], $callback[1]);
 
