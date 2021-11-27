@@ -5,7 +5,7 @@ namespace Http\Handler;
 
 
 use Annotation\Inject;
-use Kiri\Di\ContainerInterface;
+use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
 use Http\Constrict\RequestInterface;
 use Http\Constrict\ResponseInterface;

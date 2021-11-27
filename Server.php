@@ -18,7 +18,7 @@ use Http\Message\ServerRequest;
 use Http\Message\Stream;
 use Kiri\Abstracts\Config;
 use Kiri\Context;
-use Kiri\Di\ContainerInterface;
+use Psr\Container\ContainerInterface;
 use Kiri\Exception\ConfigException;
 use Psr\Http\Message\ServerRequestInterface;
 use Swoole\Http\Request;
