@@ -18,8 +18,10 @@ use Http\Message\ServerRequest;
 use Http\Message\Stream;
 use Kiri\Abstracts\Config;
 use Kiri\Context;
+use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\ContainerInterface;
 use Kiri\Exception\ConfigException;
+use Psr\Container\NotFoundExceptionInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Swoole\Http\Request;
 use Swoole\Http\Response;
@@ -51,9 +53,11 @@ class Server implements OnRequestInterface
 	public ContainerInterface $container;
 
 
-	/**
-	 * @throws ConfigException
-	 */
+    /**
+     * @throws ConfigException
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     */
 	public function init()
 	{
 		$exceptionHandler = Config::get('exception.http', ExceptionHandlerDispatcher::class);
