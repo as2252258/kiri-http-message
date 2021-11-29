@@ -23,25 +23,29 @@ class Handler
 	public ?array $params = [];
 
 
-	public ?array $_middlewares = [];
+	public ?array $middlewares = [];
 
 
 	/**
 	 * @param string $route
 	 * @param array|Closure $callback
+	 * @param array $middlewares
 	 * @throws \ReflectionException
 	 */
-	public function __construct(string $route, array|Closure $callback)
+	public function __construct(string $route, array|Closure $callback, array $middlewares = [])
 	{
 		$this->route = $route;
 		$this->params = $this->_injectParams($callback);
+		if (!empty($middlewares)) {
+			$this->middlewares = $middlewares;
+		}
 		if ($callback instanceof Closure) {
 			$this->callback = $callback;
 			return;
 		}
-		$this->_middlewares = MiddlewareManager::get($callback);
-		$aspect = NoteManager::getSpecify_annotation(Aspect::class, $callback[0], $callback[1]);
+		$this->middlewares = MiddlewareManager::get($callback);
 
+		$aspect = NoteManager::getSpecify_annotation(Aspect::class, $callback[0], $callback[1]);
 		$callback[0] = Kiri::getDi()->get($callback[0]);
 		if (!is_null($aspect)) {
 			$this->recover($aspect, $callback);

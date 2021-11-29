@@ -8,6 +8,7 @@ use Exception;
 use Http\Handler\Abstracts\MiddlewareManager;
 use Kiri\Error\Logger;
 use Kiri\Kiri;
+use Psr\Http\Server\MiddlewareInterface;
 use ReflectionException;
 use Throwable;
 
@@ -181,7 +182,21 @@ class Router
 				$this->addMiddlewares(...$closure);
 			}
 			foreach ($method as $value) {
-				$this->handlers[$route][$value] = new Handler($route, $closure);
+				$middlewares = [];
+				if ($closure instanceof Closure) {
+					$middleware = array_column($this->groupTack, 'middleware');
+					$middleware = array_unique($middleware);
+					if (!empty($middleware = array_filter($middleware))) {
+						foreach ($middleware as $mi) {
+							$mi = Kiri::getDi()->get($mi);
+							if (!($mi instanceof MiddlewareInterface)) {
+								throw new Exception();
+							}
+							$middlewares[] = [$mi, 'process'];
+						}
+					}
+				}
+				$this->handlers[$route][$value] = new Handler($route, $closure, $middlewares);
 			}
 		} catch (Throwable $throwable) {
 			$this->logger->error($throwable->getMessage(), [

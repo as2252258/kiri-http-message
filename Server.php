@@ -106,7 +106,7 @@ class Server implements OnRequestInterface
 	 */
 	protected function handler(Handler $handler, $PsrRequest): \Psr\Http\Message\ResponseInterface
 	{
-		$dispatcher = new Dispatcher($handler, $handler->_middlewares);
+		$dispatcher = new Dispatcher($handler, $handler->middlewares);
 		return $dispatcher->handle($PsrRequest);
 	}
 
