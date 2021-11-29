@@ -12,6 +12,8 @@ use ReflectionException;
 use Throwable;
 
 
+const ROUTER_DEFAULT_TYPE = 'http';
+
 class Router
 {
 
@@ -28,7 +30,7 @@ class Router
 	/**
 	 * @var string
 	 */
-	private static string $type = 'http';
+	private static string $type = ROUTER_DEFAULT_TYPE;
 
 
 	/**
@@ -49,7 +51,7 @@ class Router
 	{
 		static::$type = $name;
 		$closure();
-		static::$type = 'http';
+		static::$type = ROUTER_DEFAULT_TYPE;
 	}
 
 
@@ -60,7 +62,7 @@ class Router
 	{
 		static::$type = 'json-rpc';
 		$handler();
-		static::$type = 'http';
+		static::$type = ROUTER_DEFAULT_TYPE;
 	}
 
 
