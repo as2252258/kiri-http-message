@@ -5,12 +5,12 @@ namespace Http\Handler;
 use Annotation\Inject;
 use Closure;
 use Exception;
-use Http\Handler\Abstracts\HandlerManager;
 use Http\Handler\Abstracts\MiddlewareManager;
 use Kiri\Error\Logger;
 use Kiri\Kiri;
 use ReflectionException;
 use Throwable;
+
 
 class Router
 {
@@ -19,7 +19,22 @@ class Router
 	protected array $groupTack = [];
 
 
+	/**
+	 * @var array|string[]
+	 */
 	protected array $methods = ['GET', 'POST', 'HEAD', 'OPTIONS', 'PUT', 'DELETE'];
+
+
+	/**
+	 * @var string
+	 */
+	private static string $type = 'http';
+
+
+	/**
+	 * @var array
+	 */
+	private array $handlers = [];
 
 
 	#[Inject(Logger::class)]
@@ -27,129 +42,120 @@ class Router
 
 
 	/**
-	 * @param $route
-	 * @param $handler
-	 * @return void
-	 * @throws
+	 * @param string $name
+	 * @param Closure $closure
 	 */
-	public static function socket($route, $handler): void
+	public static function addServer(string $name, Closure $closure)
 	{
-		$router = Kiri::getDi()->get(Router::class);
-		$router->addRoute('SOCKET', $route, $handler);
+		static::$type = $name;
+		$closure();
+		static::$type = 'http';
 	}
 
 
 	/**
-	 * @param $service
-	 * @param Closure $callback
-	 * @param string $version
+	 * @param Closure $handler
 	 */
-	public static function addService($service, Closure $callback, string $version = '2.0')
+	public static function jsonp(Closure $handler)
 	{
-		$default = ['prefix' => '.rpc/' . $service . '/' . $version];
-		static::group($default, $callback);
+		static::$type = 'json-rpc';
+		$handler();
+		static::$type = 'http';
 	}
 
 
 	/**
-	 * @param $method
-	 * @param $handler
+	 * @param string $route
+	 * @param string|Closure $handler
 	 * @throws ReflectionException
 	 */
-	public static function jsonp($method, $handler)
+	public static function post(string $route, string|Closure $handler): void
 	{
-		$router = Kiri::getDi()->get(Router::class);
-		$router->addRoute('json-rpc', $method, $handler);
+		$router = Kiri::getDi()->get(DataGrip::class)->get(static::$type);
+		$router->_addRoute('POST', $route, $handler);
+	}
+
+	/**
+	 * @param string $route
+	 * @param string|Closure $handler
+	 * @throws ReflectionException
+	 */
+	public static function get(string $route, string|Closure $handler): void
+	{
+		$router = Kiri::getDi()->get(DataGrip::class)->get(static::$type);
+		$router->_addRoute('GET', $route, $handler);
 	}
 
 
 	/**
-	 * @param $route
-	 * @param $handler
-	 * @return void
-	 * @throws
+	 * @param string $route
+	 * @param string|Closure $handler
+	 * @throws ReflectionException
 	 */
-	public static function post($route, $handler): void
+	public static function options(string $route, string|Closure $handler): void
 	{
-		$router = Kiri::getDi()->get(Router::class);
-		$router->addRoute('POST', $route, $handler);
-	}
-
-	/**
-	 * @param $route
-	 * @param $handler
-	 * @return void
-	 * @throws
-	 */
-	public static function get($route, $handler): void
-	{
-		$router = Kiri::getDi()->get(Router::class);
-		$router->addRoute('GET', $route, $handler);
+		$router = Kiri::getDi()->get(DataGrip::class)->get(static::$type);
+		$router->_addRoute('OPTIONS', $route, $handler);
 	}
 
 
 	/**
-	 * @param $route
-	 * @param $handler
-	 * @return void
-	 * @throws
+	 * @param string $route
+	 * @param string|Closure $handler
+	 * @throws ReflectionException
 	 */
-	public static function options($route, $handler): void
+	public static function any(string $route, string|Closure $handler): void
 	{
-		$router = Kiri::getDi()->get(Router::class);
-		$router->addRoute('OPTIONS', $route, $handler);
+		$router = Kiri::getDi()->get(DataGrip::class)->get(static::$type);
+		$router->_addRoute($router->methods, $route, $handler);
+	}
+
+	/**
+	 * @param string $route
+	 * @param string|Closure $handler
+	 * @throws ReflectionException
+	 */
+	public static function delete(string $route, string|Closure $handler): void
+	{
+		$router = Kiri::getDi()->get(DataGrip::class)->get(static::$type);
+		$router->_addRoute('DELETE', $route, $handler);
 	}
 
 
 	/**
-	 * @param $route
-	 * @param $handler
-	 * @throws
+	 * @param string $route
+	 * @param string|Closure $handler
+	 * @throws ReflectionException
 	 */
-	public static function any($route, $handler): void
+	public static function head(string $route, string|Closure $handler): void
 	{
-		$router = Kiri::getDi()->get(Router::class);
-		foreach ($router->methods as $method) {
-			$router->addRoute($method, $route, $handler);
-		}
-	}
-
-	/**
-	 * @param $route
-	 * @param $handler
-	 * @return void
-	 * @throws
-	 */
-	public static function delete($route, $handler): void
-	{
-		$router = Kiri::getDi()->get(Router::class);
-		$router->addRoute('DELETE', $route, $handler);
+		$router = Kiri::getDi()->get(DataGrip::class)->get(static::$type);
+		$router->_addRoute('HEAD', $route, $handler);
 	}
 
 
 	/**
-	 * @param $route
-	 * @param $handler
-	 * @return void
-	 * @throws Exception
+	 * @param string $route
+	 * @param string|Closure $handler
+	 * @throws ReflectionException
 	 */
-	public static function head($route, $handler): void
+	public static function put(string $route, string|Closure $handler): void
 	{
-		$router = Kiri::getDi()->get(Router::class);
-		$router->addRoute('HEAD', $route, $handler);
+		$router = Kiri::getDi()->get(DataGrip::class)->get(static::$type);
+		$router->_addRoute('PUT', $route, $handler);
 	}
 
 
 	/**
-	 * @param $route
-	 * @param $handler
-	 * @return void
-	 * @throws
+	 * @param array $methods
+	 * @param string $route
+	 * @param string|Closure $handler
+	 * @throws ReflectionException
 	 */
-	public static function put($route, $handler): void
+	public static function addRoute(array $methods, string $route, string|Closure $handler): void
 	{
-		$router = Kiri::getDi()->get(Router::class);
-		$router->addRoute('PUT', $route, $handler);
+		$router = Kiri::getDi()->get(DataGrip::class)->get(static::$type);
+		$router->_addRoute($methods, $route, $handler);
 	}
 
 
@@ -159,7 +165,7 @@ class Router
 	 * @param string|Closure $closure
 	 * @throws
 	 */
-	public function addRoute(string|array $method, string $route, string|Closure $closure)
+	private function _addRoute(string|array $method, string $route, string|Closure $closure)
 	{
 		try {
 			if (!is_array($method)) $method = [$method];
@@ -173,7 +179,7 @@ class Router
 				$this->addMiddlewares(...$closure);
 			}
 			foreach ($method as $value) {
-				HandlerManager::add($route, $value, new Handler($route, $closure));
+				$this->handlers[$route][$value] = new Handler($route, $closure);
 			}
 		} catch (Throwable $throwable) {
 			$this->logger->error($throwable->getMessage(), [
@@ -185,19 +191,34 @@ class Router
 
 
 	/**
+	 * @param string $path
+	 * @param string $method
+	 * @return Handler|int|null
+	 */
+	public function find(string $path, string $method): Handler|int|null
+	{
+		if (!isset($this->handlers[$path])) {
+			return 404;
+		}
+		$handler = $this->handlers[$path][$method] ?? null;
+		if (is_null($handler)) {
+			return 405;
+		}
+		return $handler;
+	}
+
+
+	/**
 	 * @param array $config
 	 * @param Closure $closure
-	 * @throws ReflectionException
 	 */
-	public static function group(array $config, Closure $closure)
+	public function group(array $config, Closure $closure)
 	{
-		$router = Kiri::getDi()->get(Router::class);
+		array_push($this->groupTack, $config);
 
-		array_push($router->groupTack, $config);
+		call_user_func($closure);
 
-		call_user_func($closure, $router);
-
-		array_pop($router->groupTack);
+		array_pop($this->groupTack);
 	}
 
 

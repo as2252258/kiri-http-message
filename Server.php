@@ -10,7 +10,7 @@ use Http\Abstracts\ExceptionHandlerInterface;
 use Http\Abstracts\ResponseHelper;
 use Http\Constrict\RequestInterface;
 use Http\Constrict\ResponseInterface;
-use Http\Handler\Abstracts\HandlerManager;
+use Http\Handler\DataGrip;
 use Http\Handler\Dispatcher;
 use Http\Handler\Handler;
 use Http\Handler\Router;
@@ -18,9 +18,9 @@ use Http\Message\ServerRequest;
 use Http\Message\Stream;
 use Kiri\Abstracts\Config;
 use Kiri\Context;
+use Kiri\Exception\ConfigException;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\ContainerInterface;
-use Kiri\Exception\ConfigException;
 use Psr\Container\NotFoundExceptionInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Swoole\Http\Request;
@@ -35,8 +35,6 @@ class Server implements OnRequestInterface
 	use EventDispatchHelper;
 	use ResponseHelper;
 
-	/** @var Router|mixed */
-	#[Inject(Router::class)]
 	public Router $router;
 
 
@@ -53,11 +51,12 @@ class Server implements OnRequestInterface
 	public ContainerInterface $container;
 
 
-    /**
-     * @throws ConfigException
-     * @throws ContainerExceptionInterface
-     * @throws NotFoundExceptionInterface
-     */
+	/**
+	 * @throws ConfigException
+	 * @throws ContainerExceptionInterface
+	 * @throws NotFoundExceptionInterface
+	 * @throws \ReflectionException
+	 */
 	public function init()
 	{
 		$exceptionHandler = Config::get('exception.http', ExceptionHandlerDispatcher::class);
@@ -66,6 +65,8 @@ class Server implements OnRequestInterface
 		}
 		$this->exceptionHandler = $this->container->get($exceptionHandler);
 		$this->responseEmitter = $this->container->get(ResponseEmitter::class);
+
+		$this->router = $this->container->get(DataGrip::class)->get('http');
 	}
 
 
@@ -78,8 +79,7 @@ class Server implements OnRequestInterface
 	{
 		try {
 			[$PsrRequest, $PsrResponse] = $this->initRequestResponse($request);
-			/** @var Handler $handler */
-			$handler = HandlerManager::get($request->server['request_uri'], $request->getMethod());
+			$handler = $this->router->find($request->server['request_uri'], $request->getMethod());
 			if (is_integer($handler)) {
 				$PsrResponse->withStatus($handler)->withBody(new Stream('Allow Method[' . $request->getMethod() . '].'));
 			} else if (is_null($handler)) {
