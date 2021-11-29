@@ -7,6 +7,7 @@ namespace Http\Handler\Abstracts;
 use Closure;
 use Co\Iterator;
 use Kiri\Abstracts\BaseObject;
+use ReflectionException;
 
 
 /**
@@ -28,6 +29,7 @@ class MiddlewareManager extends BaseObject
 	 * @param $method
 	 * @param array|string|null $middlewares
 	 * @return bool
+	 * @throws ReflectionException
 	 */
 	public static function add($class, $method, array|string|null $middlewares): bool
 	{

@@ -34,7 +34,7 @@ class Handler
 	public function __construct(string $route, array|Closure $callback)
 	{
 		$this->route = $route;
-		$this->_injectParams($callback);
+		$this->params = $this->_injectParams($callback);
 		if ($callback instanceof Closure) {
 			$this->callback = $callback;
 			return;
@@ -54,6 +54,7 @@ class Handler
 	/**
 	 * @param Aspect $aspect
 	 * @param $callback
+	 * @throws \ReflectionException
 	 */
 	public function recover(Aspect $aspect, $callback)
 	{
@@ -67,15 +68,16 @@ class Handler
 
 	/**
 	 * @param array|Closure $callback
+	 * @return array|null
 	 * @throws \ReflectionException
 	 */
-	private function _injectParams(array|Closure $callback)
+	private function _injectParams(array|Closure $callback): ?array
 	{
 		$container = Kiri::getDi();
 		if (!($callback instanceof Closure)) {
-			$this->params = $container->getMethodParameters($callback[0], $callback[1]);
+			return $container->getMethodParameters($callback[0], $callback[1]);
 		} else {
-			$this->params = $container->getFunctionParameters($callback);
+			return $container->getFunctionParameters($callback);
 		}
 	}
 }

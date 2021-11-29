@@ -187,6 +187,7 @@ class Router
 	/**
 	 * @param array $config
 	 * @param Closure $closure
+	 * @throws ReflectionException
 	 */
 	public static function group(array $config, Closure $closure)
 	{
@@ -218,6 +219,7 @@ class Router
 	/**
 	 * @param $controller
 	 * @param $method
+	 * @throws ReflectionException
 	 */
 	protected function addMiddlewares($controller, $method)
 	{
