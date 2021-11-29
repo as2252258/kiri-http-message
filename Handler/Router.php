@@ -211,14 +211,17 @@ class Router
 	/**
 	 * @param array $config
 	 * @param Closure $closure
+	 * @throws ReflectionException
 	 */
-	public function group(array $config, Closure $closure)
+	public static function group(array $config, Closure $closure)
 	{
-		array_push($this->groupTack, $config);
+		$router = Kiri::getDi()->get(DataGrip::class)->get(static::$type);
+
+		array_push($router->groupTack, $config);
 
 		call_user_func($closure);
 
-		array_pop($this->groupTack);
+		array_pop($router->groupTack);
 	}
 
 
