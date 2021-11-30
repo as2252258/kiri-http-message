@@ -197,6 +197,7 @@ class Router
 								$middlewares[$item::class] = $item;
 							}
 						}
+						$middlewares = array_values($middlewares);
 					}
 				}
 				$this->handlers[$route][$value] = new Handler($route, $closure, $middlewares);
