@@ -150,12 +150,12 @@ class Router
 
 
 	/**
-	 * @param array $methods
+	 * @param array|string $methods
 	 * @param string $route
 	 * @param string|Closure $handler
 	 * @throws ReflectionException
 	 */
-	public static function addRoute(array $methods, string $route, string|Closure $handler): void
+	public static function addRoute(array|string $methods, string $route, string|Closure $handler): void
 	{
 		$router = Kiri::getDi()->get(DataGrip::class)->get(static::$type);
 		$router->_addRoute($methods, $route, $handler);
@@ -172,7 +172,7 @@ class Router
 	{
 		try {
 			if (!is_array($method)) {
-					$method = [$method];
+				$method = [$method];
 			}
 			$route = $this->getPath($route);
 			if (is_string($closure)) {
