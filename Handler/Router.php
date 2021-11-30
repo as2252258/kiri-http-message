@@ -171,7 +171,9 @@ class Router
 	private function _addRoute(string|array $method, string $route, string|Closure $closure)
 	{
 		try {
-			if (!is_array($method)) $method = [$method];
+			if (!is_array($method)) {
+					$method = [$method];
+			}
 			$route = $this->getPath($route);
 			if (is_string($closure)) {
 				$closure = explode('@', $closure);
