@@ -188,7 +188,9 @@ class Router
 					$middleware = array_unique($middleware);
 					if (!empty($middleware = array_filter($middleware))) {
 						foreach ($middleware as $mi) {
-							if (!is_array($mi)) $mi = [$mi];
+							if (!is_array($mi)) {
+								$mi = [$mi];
+							}
 							foreach ($mi as $item) {
 								$item = Kiri::getDi()->get($item);
 								if (!($item instanceof MiddlewareInterface)) {
