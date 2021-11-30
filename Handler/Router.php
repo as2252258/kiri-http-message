@@ -194,7 +194,7 @@ class Router
 								if (!($item instanceof MiddlewareInterface)) {
 									throw new Exception();
 								}
-								$middlewares[] = [$item, 'process'];
+								$middlewares[$item::class] = $item;
 							}
 						}
 					}
