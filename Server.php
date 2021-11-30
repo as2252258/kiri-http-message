@@ -3,7 +3,7 @@
 namespace Http;
 
 
-use Annotation\Inject;
+use Note\Inject;
 use Exception;
 use Http\Abstracts\EventDispatchHelper;
 use Http\Abstracts\ExceptionHandlerInterface;

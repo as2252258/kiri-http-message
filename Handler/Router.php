@@ -2,7 +2,7 @@
 
 namespace Http\Handler;
 
-use Annotation\Inject;
+use Note\Inject;
 use Closure;
 use Exception;
 use Http\Handler\Abstracts\MiddlewareManager;

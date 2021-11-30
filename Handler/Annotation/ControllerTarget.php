@@ -1,8 +1,8 @@
 <?php
 
-namespace Http\Handler\Annotation;
+namespace Http\Handler\Note;
 
-use Annotation\Attribute;
+use Note\Attribute;
 
 #[\Attribute(\Attribute::TARGET_CLASS)] class ControllerTarget extends Attribute
 {

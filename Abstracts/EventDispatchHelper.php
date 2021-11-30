@@ -2,7 +2,7 @@
 
 namespace Http\Abstracts;
 
-use Annotation\Inject;
+use Note\Inject;
 use Kiri\Events\EventDispatch;
 
 trait EventDispatchHelper

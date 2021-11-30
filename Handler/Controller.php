@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace Http\Handler;
 
 
-use Annotation\Inject;
+use Note\Inject;
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
 use Http\Constrict\RequestInterface;

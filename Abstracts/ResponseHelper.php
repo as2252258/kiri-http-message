@@ -2,7 +2,7 @@
 
 namespace Http\Abstracts;
 
-use Annotation\Inject;
+use Note\Inject;
 use Http\Emitter;
 use Http\Constrict\Response as CResponse;
 

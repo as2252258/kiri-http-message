@@ -2,7 +2,7 @@
 
 namespace Http\Handler\Abstracts;
 
-use Annotation\Inject;
+use Note\Inject;
 use Psr\Http\Server\MiddlewareInterface;
 use Http\Constrict\ResponseInterface;
 
