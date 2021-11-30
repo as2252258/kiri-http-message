@@ -188,11 +188,14 @@ class Router
 					$middleware = array_unique($middleware);
 					if (!empty($middleware = array_filter($middleware))) {
 						foreach ($middleware as $mi) {
-							$mi = Kiri::getDi()->get($mi);
-							if (!($mi instanceof MiddlewareInterface)) {
-								throw new Exception();
+							if (!is_array($mi)) $mi = [$mi];
+							foreach ($mi as $item) {
+								$item = Kiri::getDi()->get($item);
+								if (!($item instanceof MiddlewareInterface)) {
+									throw new Exception();
+								}
+								$middlewares[] = [$item, 'process'];
 							}
-							$middlewares[] = [$mi, 'process'];
 						}
 					}
 				}
