@@ -2,13 +2,14 @@
 
 namespace Http\Handler;
 
-use Note\Aspect;
 use Closure;
 use Http\Aspect\JoinPoint;
 use Http\Aspect\OnAspectInterface;
 use Http\Handler\Abstracts\MiddlewareManager;
 use Kiri\Di\NoteManager;
 use Kiri\Kiri;
+use Note\Aspect;
+use ReflectionException;
 
 class Handler
 {
@@ -30,7 +31,7 @@ class Handler
 	 * @param string $route
 	 * @param array|Closure $callback
 	 * @param array $middlewares
-	 * @throws \ReflectionException
+	 * @throws ReflectionException
 	 */
 	public function __construct(string $route, array|Closure $callback, array $middlewares = [])
 	{
@@ -39,7 +40,7 @@ class Handler
 		if (!empty($middlewares)) {
 			$this->middlewares = $middlewares;
 		}
-		if ($callback instanceof Closure) {
+		if ($callback instanceof Closure || count($callback) == 1) {
 			$this->callback = $callback;
 			return;
 		}
@@ -58,7 +59,7 @@ class Handler
 	/**
 	 * @param Aspect $aspect
 	 * @param $callback
-	 * @throws \ReflectionException
+	 * @throws ReflectionException
 	 */
 	public function recover(Aspect $aspect, $callback)
 	{
@@ -73,7 +74,7 @@ class Handler
 	/**
 	 * @param array|Closure $callback
 	 * @return array|null
-	 * @throws \ReflectionException
+	 * @throws ReflectionException
 	 */
 	private function _injectParams(array|Closure $callback): ?array
 	{
