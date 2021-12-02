@@ -77,6 +77,9 @@ class Server implements OnRequestInterface
 	 */
 	public function onRequest(Request $request, Response $response): void
 	{
+		$response->status(200);
+		$response->end();
+		return;
 		try {
 			[$PsrRequest, $PsrResponse] = $this->initRequestResponse($request);
 			$handler = $this->router->find($request->server['request_uri'], $request->getMethod());
