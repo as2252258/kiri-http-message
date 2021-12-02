@@ -77,9 +77,9 @@ class Server implements OnRequestInterface
 	 */
 	public function onRequest(Request $request, Response $response): void
 	{
-		$response->status(200);
-		$response->end();
-		return;
+//		$response->status(200);
+//		$response->end();
+//		return;
 		try {
 			[$PsrRequest, $PsrResponse] = $this->initRequestResponse($request);
 			$handler = $this->router->find($request->server['request_uri'], $request->getMethod());
@@ -88,15 +88,18 @@ class Server implements OnRequestInterface
 			} else if (is_null($handler)) {
 				$PsrResponse->withStatus(404)->withBody(new Stream('Page not found.'));
 			} else {
+				$response->status(200);
+				$response->end();
+				return;
 				$PsrResponse = $this->handler($handler, $PsrRequest);
 			}
 		} catch (\Throwable $throwable) {
 			$PsrResponse = $this->exceptionHandler->emit($throwable, $this->response);
 		} finally {
-			if ($request->server['request_method'] == 'HEAD') {
-				$PsrResponse->getBody()->write('');
-			}
-			$this->responseEmitter->sender($response, $PsrResponse);
+//			if ($request->server['request_method'] == 'HEAD') {
+//				$PsrResponse->getBody()->write('');
+//			}
+//			$this->responseEmitter->sender($response, $PsrResponse);
 		}
 	}
 
