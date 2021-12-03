@@ -208,9 +208,7 @@ class Router
 		if (empty($middleware = array_filter($middleware))) {
 			return;
 		}
-		foreach ($middleware as $value) {
-			MiddlewareManager::add($closure[0], $closure[1], $value);
-		}
+		MiddlewareManager::add($closure[0], $closure[1], $middleware);
 	}
 
 
