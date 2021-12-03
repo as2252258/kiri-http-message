@@ -2,12 +2,12 @@
 
 namespace Http\Handler;
 
-use Note\Inject;
 use Closure;
 use Exception;
 use Http\Handler\Abstracts\MiddlewareManager;
 use Kiri\Error\Logger;
 use Kiri\Kiri;
+use Note\Inject;
 use Psr\Http\Server\MiddlewareInterface;
 use ReflectionException;
 use Throwable;
@@ -283,6 +283,34 @@ class Router
 		foreach ($middleware as $value) {
 			MiddlewareManager::add($controller, $method, $value);
 		}
+	}
+
+
+	/**
+	 * @throws ReflectionException
+	 * @throws Exception
+	 */
+	protected function loadMiddlewares(): array
+	{
+		$middlewares = [];
+		$middleware = array_column($this->groupTack, 'middleware');
+		$middleware = array_unique($middleware);
+		if (!empty($middleware = array_filter($middleware))) {
+			foreach ($middleware as $mi) {
+				if (!is_array($mi)) {
+					$mi = [$mi];
+				}
+				foreach ($mi as $item) {
+					$item = Kiri::getDi()->get($item);
+					if (!($item instanceof MiddlewareInterface)) {
+						throw new Exception('The Middleware must instance ' . MiddlewareInterface::class);
+					}
+					$middlewares[$item::class] = $item;
+				}
+			}
+			$middlewares = array_values($middlewares);
+		}
+		return $middlewares;
 	}
 
 
