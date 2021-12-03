@@ -6,8 +6,8 @@ namespace Http\Handler;
 
 use Http\Constrict\RequestInterface;
 use Http\Constrict\ResponseInterface;
-use Kiri\Abstracts\BaseObject;
 use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\ContainerInterface;
 use Psr\Container\NotFoundExceptionInterface;
 use Psr\Log\LoggerInterface;
 
@@ -17,8 +17,9 @@ use Psr\Log\LoggerInterface;
  * @property RequestInterface $request
  * @property ResponseInterface $response
  * @property LoggerInterface $logger
+ * @property ContainerInterface $container
  */
-class Controller extends BaseObject
+class Controller
 {
 
 	/**
@@ -52,5 +53,16 @@ class Controller extends BaseObject
 	{
 		return $this->container->get(LoggerInterface::class);
 	}
+
+
+	/**
+	 * @param string $name
+	 * @return mixed
+	 */
+	public function __get(string $name)
+	{
+		return $this->{'get' . ucfirst($name)}();
+	}
+
 
 }
