@@ -207,7 +207,9 @@ class Router
 		if (empty($middleware = array_filter($middleware))) {
 			return;
 		}
-		MiddlewareManager::add($closure[0], $closure[1], $middleware);
+		\map($middleware, static function ($middleware) use ($closure) {
+			MiddlewareManager::add($closure[0], $closure[1], $middleware);
+		});
 	}
 
 
