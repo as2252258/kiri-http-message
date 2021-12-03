@@ -6,61 +6,44 @@ namespace Http\Handler;
 
 use Http\Constrict\RequestInterface;
 use Http\Constrict\ResponseInterface;
-use JetBrains\PhpStorm\Pure;
-use Kiri\Abstracts\BaseObject;
-use Kiri\Kiri;
-use Psr\Container\ContainerExceptionInterface;
+use Note\Inject;
 use Psr\Container\ContainerInterface;
-use Psr\Container\NotFoundExceptionInterface;
 use Psr\Log\LoggerInterface;
-use ReflectionException;
 
 /**
  * Class WebController
  * @package Kiri\Kiri\Web
  * @property RequestInterface $request
  * @property ResponseInterface $response
- * @property LoggerInterface $logger
- * @property ContainerInterface $container
+ * @property LoggerInterface $
  */
-class Controller extends BaseObject
+class Controller
 {
 
+
 	/**
-	 * @return RequestInterface
-	 * @throws ContainerExceptionInterface
-	 * @throws NotFoundExceptionInterface
-	 * @throws ReflectionException
+	 * @var ContainerInterface
 	 */
-	protected function getRequest(): RequestInterface
-	{
-		return $this->getContainer()->get(RequestInterface::class);
-	}
+	#[Inject(ContainerInterface::class)]
+	public ContainerInterface $container;
 
 
 	/**
-	 * @return ResponseInterface
-	 * @throws ContainerExceptionInterface
-	 * @throws NotFoundExceptionInterface
-	 * @throws ReflectionException
+	 * @var RequestInterface
 	 */
-	protected function getResponse(): ResponseInterface
-	{
-		return $this->getContainer()->get(ResponseInterface::class);
-	}
+	#[Inject(RequestInterface::class)]
+	public RequestInterface $request;
 
 
 	/**
-	 * @return LoggerInterface
-	 * @throws ContainerExceptionInterface
-	 * @throws NotFoundExceptionInterface
-	 * @throws ReflectionException
+	 * @var ResponseInterface
 	 */
-	protected function getLogger(): LoggerInterface
-	{
-		return $this->getContainer()->get(LoggerInterface::class);
-	}
+	#[Inject(ResponseInterface::class)]
+	public ResponseInterface $response;
 
 
+
+	#[Inject(LoggerInterface::class)]
+	public LoggerInterface $logger;
 
 }
