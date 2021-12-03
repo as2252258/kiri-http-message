@@ -6,6 +6,8 @@ namespace Http\Handler;
 
 use Http\Constrict\RequestInterface;
 use Http\Constrict\ResponseInterface;
+use JetBrains\PhpStorm\Pure;
+use Kiri\Kiri;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\ContainerInterface;
 use Psr\Container\NotFoundExceptionInterface;
@@ -27,9 +29,9 @@ class Controller
 	 * @throws ContainerExceptionInterface
 	 * @throws NotFoundExceptionInterface
 	 */
-	public function getRequest(): RequestInterface
+	protected function getRequest(): RequestInterface
 	{
-		return $this->container->get(RequestInterface::class);
+		return $this->getContainer()->get(RequestInterface::class);
 	}
 
 
@@ -38,9 +40,9 @@ class Controller
 	 * @throws ContainerExceptionInterface
 	 * @throws NotFoundExceptionInterface
 	 */
-	public function getResponse(): ResponseInterface
+	protected function getResponse(): ResponseInterface
 	{
-		return $this->container->get(ResponseInterface::class);
+		return $this->getContainer()->get(ResponseInterface::class);
 	}
 
 
@@ -49,9 +51,18 @@ class Controller
 	 * @throws ContainerExceptionInterface
 	 * @throws NotFoundExceptionInterface
 	 */
-	public function getLogger(): LoggerInterface
+	protected function getLogger(): LoggerInterface
 	{
-		return $this->container->get(LoggerInterface::class);
+		return $this->getContainer()->get(LoggerInterface::class);
+	}
+
+
+	/**
+	 * @return ContainerInterface
+	 */
+	#[Pure] protected function getContainer(): ContainerInterface
+	{
+		return Kiri::getDi();
 	}
 
 
