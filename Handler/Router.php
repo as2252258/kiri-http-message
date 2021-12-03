@@ -196,7 +196,7 @@ class Router
 	 * @param string|Closure $closure
 	 * @throws ReflectionException
 	 */
-	private function _route_analysis(string|Closure $closure)
+	private function _route_analysis(string|Closure &$closure)
 	{
 		$closure = explode('@', $closure);
 		$closure[0] = $this->addNamespace($closure[0]);
