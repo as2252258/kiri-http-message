@@ -7,11 +7,13 @@ namespace Http\Handler;
 use Http\Constrict\RequestInterface;
 use Http\Constrict\ResponseInterface;
 use JetBrains\PhpStorm\Pure;
+use Kiri\Abstracts\BaseObject;
 use Kiri\Kiri;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\ContainerInterface;
 use Psr\Container\NotFoundExceptionInterface;
 use Psr\Log\LoggerInterface;
+use ReflectionException;
 
 /**
  * Class WebController
@@ -21,13 +23,14 @@ use Psr\Log\LoggerInterface;
  * @property LoggerInterface $logger
  * @property ContainerInterface $container
  */
-class Controller
+class Controller extends BaseObject
 {
 
 	/**
 	 * @return RequestInterface
 	 * @throws ContainerExceptionInterface
 	 * @throws NotFoundExceptionInterface
+	 * @throws ReflectionException
 	 */
 	protected function getRequest(): RequestInterface
 	{
@@ -39,6 +42,7 @@ class Controller
 	 * @return ResponseInterface
 	 * @throws ContainerExceptionInterface
 	 * @throws NotFoundExceptionInterface
+	 * @throws ReflectionException
 	 */
 	protected function getResponse(): ResponseInterface
 	{
@@ -50,30 +54,13 @@ class Controller
 	 * @return LoggerInterface
 	 * @throws ContainerExceptionInterface
 	 * @throws NotFoundExceptionInterface
+	 * @throws ReflectionException
 	 */
 	protected function getLogger(): LoggerInterface
 	{
 		return $this->getContainer()->get(LoggerInterface::class);
 	}
 
-
-	/**
-	 * @return ContainerInterface
-	 */
-	#[Pure] protected function getContainer(): ContainerInterface
-	{
-		return Kiri::getDi();
-	}
-
-
-	/**
-	 * @param string $name
-	 * @return mixed
-	 */
-	public function __get(string $name)
-	{
-		return $this->{'get' . ucfirst($name)}();
-	}
 
 
 }
