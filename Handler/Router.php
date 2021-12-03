@@ -174,15 +174,14 @@ class Router
 	private function _addRoute(array $method, string $route, string|Closure $closure)
 	{
 		try {
-			$route = $this->getPath($route);
-			$middlewares = [];
+			$route = $this->_splicing_routing($route);
 			if ($closure instanceof Closure) {
 				$middlewares = $this->loadMiddlewares($closure, $route);
 			} else if (is_string($closure)) {
 				$this->_route_analysis($closure);
 			}
 			foreach ($method as $value) {
-				$this->handlers[$route][$value] = new Handler($route, $closure, $middlewares);
+				$this->handlers[$route][$value] = new Handler($route, $closure, $middlewares ?? []);
 			}
 		} catch (Throwable $throwable) {
 			$this->logger->error($throwable->getMessage(), [
@@ -251,7 +250,7 @@ class Router
 	 * @param string $route
 	 * @return string
 	 */
-	protected function getPath(string $route): string
+	protected function _splicing_routing(string $route): string
 	{
 		$route = ltrim($route, '/');
 		$prefix = array_column($this->groupTack, 'prefix');
