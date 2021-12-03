@@ -42,7 +42,9 @@ class Controller
 	public ResponseInterface $response;
 
 
-
+	/**
+	 * @var LoggerInterface
+	 */
 	#[Inject(LoggerInterface::class)]
 	public LoggerInterface $logger;
 
