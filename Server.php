@@ -3,6 +3,7 @@
 namespace Http;
 
 
+use Kiri\Abstracts\BaseObject;
 use Note\Inject;
 use Exception;
 use Http\Abstracts\EventDispatchHelper;
@@ -29,7 +30,7 @@ use Swoole\Http\Response;
 /**
  *
  */
-class Server implements OnRequestInterface
+class Server extends BaseObject implements OnRequestInterface
 {
 
 	use EventDispatchHelper;
@@ -42,13 +43,6 @@ class Server implements OnRequestInterface
 	 * @var ExceptionHandlerInterface
 	 */
 	public ExceptionHandlerInterface $exceptionHandler;
-
-
-	/**
-	 * @var ContainerInterface
-	 */
-	#[Inject(ContainerInterface::class)]
-	public ContainerInterface $container;
 
 
 	/**
