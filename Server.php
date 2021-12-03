@@ -3,8 +3,7 @@
 namespace Http;
 
 
-use Kiri\Abstracts\BaseObject;
-use Note\Inject;
+use Kiri\Abstracts\Component;
 use Exception;
 use Http\Abstracts\EventDispatchHelper;
 use Http\Abstracts\ExceptionHandlerInterface;
@@ -21,7 +20,6 @@ use Kiri\Abstracts\Config;
 use Kiri\Context;
 use Kiri\Exception\ConfigException;
 use Psr\Container\ContainerExceptionInterface;
-use Psr\Container\ContainerInterface;
 use Psr\Container\NotFoundExceptionInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Swoole\Http\Request;
@@ -30,7 +28,7 @@ use Swoole\Http\Response;
 /**
  *
  */
-class Server extends BaseObject implements OnRequestInterface
+class Server extends Component implements OnRequestInterface
 {
 
 	use EventDispatchHelper;

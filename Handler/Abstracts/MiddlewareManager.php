@@ -6,7 +6,7 @@ namespace Http\Handler\Abstracts;
 
 use Closure;
 use Co\Iterator;
-use Kiri\Abstracts\BaseObject;
+use Kiri\Abstracts\Component;
 use ReflectionException;
 
 
@@ -14,7 +14,7 @@ use ReflectionException;
  * Class MiddlewareManager
  * @package Http\Route
  */
-class MiddlewareManager extends BaseObject
+class MiddlewareManager extends Component
 {
 
 
