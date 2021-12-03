@@ -4,56 +4,53 @@ declare(strict_types=1);
 namespace Http\Handler;
 
 
-use Note\Inject;
-use Psr\Container\ContainerInterface;
-use Psr\Log\LoggerInterface;
 use Http\Constrict\RequestInterface;
 use Http\Constrict\ResponseInterface;
+use Kiri\Abstracts\BaseObject;
+use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\NotFoundExceptionInterface;
+use Psr\Log\LoggerInterface;
 
 /**
  * Class WebController
  * @package Kiri\Kiri\Web
+ * @property RequestInterface $request
+ * @property ResponseInterface $response
+ * @property LoggerInterface $logger
  */
-class Controller
+class Controller extends BaseObject
 {
 
-
 	/**
-	 * inject di container
-	 *
-	 * @var ContainerInterface|null
+	 * @return RequestInterface
+	 * @throws ContainerExceptionInterface
+	 * @throws NotFoundExceptionInterface
 	 */
-    #[Inject(ContainerInterface::class)]
-    public ?ContainerInterface $container = null;
-
-
-    /**
-     * inject request
-     *
-     * @var RequestInterface|null
-     */
-    #[Inject(RequestInterface::class)]
-    public ?RequestInterface $request = null;
-
-
-    /**
-     * inject response
-     *
-     * @var ResponseInterface|null
-     */
-    #[Inject(ResponseInterface::class)]
-    public ?ResponseInterface $response = null;
-
+	public function getRequest(): RequestInterface
+	{
+		return $this->container->get(RequestInterface::class);
+	}
 
 
 	/**
-	 * inject logger
-	 *
-	 * @var LoggerInterface
+	 * @return ResponseInterface
+	 * @throws ContainerExceptionInterface
+	 * @throws NotFoundExceptionInterface
 	 */
-	#[Inject(LoggerInterface::class)]
-	public LoggerInterface $logger;
+	public function getResponse(): ResponseInterface
+	{
+		return $this->container->get(ResponseInterface::class);
+	}
 
 
+	/**
+	 * @return LoggerInterface
+	 * @throws ContainerExceptionInterface
+	 * @throws NotFoundExceptionInterface
+	 */
+	public function getLogger(): LoggerInterface
+	{
+		return $this->container->get(LoggerInterface::class);
+	}
 
 }
