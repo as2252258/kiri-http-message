@@ -81,7 +81,7 @@ class Handler
 		$container = Kiri::getDi();
 		if (!($callback instanceof Closure)) {
 			if (!isset($callback[1])) {
-				return null;
+				return [];
 			}
 			return $container->getMethodParameters($callback[0], $callback[1]);
 		} else {
