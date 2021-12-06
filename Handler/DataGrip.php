@@ -3,7 +3,6 @@
 namespace Http\Handler;
 
 use Kiri\Kiri;
-use ReflectionException;
 
 class DataGrip
 {
