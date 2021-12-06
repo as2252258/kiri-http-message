@@ -14,15 +14,13 @@ class DataGrip
 	/**
 	 * @param $type
 	 * @return Router
-	 * @throws ReflectionException
 	 */
 	public function get($type): Router
 	{
-		if (isset($this->servers[$type])) {
-			return $this->servers[$type];
+		if (!isset($this->servers[$type])) {
+			$this->servers[$type] = Kiri::getDi()->create(Router::class);
 		}
-		$router = Kiri::getDi()->get(Router::class);
-		return $this->servers[$type] = $router;
+		return $this->servers[$type];
 	}
 
 
