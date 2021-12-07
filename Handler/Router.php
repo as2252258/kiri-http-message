@@ -70,7 +70,7 @@ class Router
 	/**
 	 * @param string $route
 	 * @param string|Closure $handler
-	 * @throws ReflectionException
+	 * @throws
 	 */
 	public static function post(string $route, string|Closure $handler): void
 	{
@@ -81,7 +81,7 @@ class Router
 	/**
 	 * @param string $route
 	 * @param string|Closure $handler
-	 * @throws ReflectionException
+	 * @throws
 	 */
 	public static function get(string $route, string|Closure $handler): void
 	{
@@ -93,7 +93,7 @@ class Router
 	/**
 	 * @param string $route
 	 * @param string|Closure $handler
-	 * @throws ReflectionException
+	 * @throws
 	 */
 	public static function options(string $route, string|Closure $handler): void
 	{
@@ -105,7 +105,7 @@ class Router
 	/**
 	 * @param string $route
 	 * @param string|Closure $handler
-	 * @throws ReflectionException
+	 * @throws
 	 */
 	public static function any(string $route, string|Closure $handler): void
 	{
@@ -116,7 +116,7 @@ class Router
 	/**
 	 * @param string $route
 	 * @param string|Closure $handler
-	 * @throws ReflectionException
+	 * @throws
 	 */
 	public static function delete(string $route, string|Closure $handler): void
 	{
@@ -128,7 +128,7 @@ class Router
 	/**
 	 * @param string $route
 	 * @param string|Closure $handler
-	 * @throws ReflectionException
+	 * @throws
 	 */
 	public static function head(string $route, string|Closure $handler): void
 	{
@@ -140,7 +140,7 @@ class Router
 	/**
 	 * @param string $route
 	 * @param string|Closure $handler
-	 * @throws ReflectionException
+	 * @throws
 	 */
 	public static function put(string $route, string|Closure $handler): void
 	{
@@ -153,7 +153,7 @@ class Router
 	 * @param array|string $methods
 	 * @param string $route
 	 * @param string|Closure $handler
-	 * @throws ReflectionException
+	 * @throws
 	 */
 	public static function addRoute(array|string $methods, string $route, string|Closure $handler): void
 	{
@@ -168,10 +168,10 @@ class Router
 	/**
 	 * @param array $method
 	 * @param string $route
-	 * @param string|Closure $closure
+	 * @param string|Closure|array $closure
 	 * @throws
 	 */
-	private function _addRoute(array $method, string $route, string|Closure $closure)
+	private function _addRoute(array $method, string $route, string|Closure|array $closure)
 	{
 		try {
 			$route = $this->_splicing_routing($route);
@@ -234,13 +234,13 @@ class Router
 	/**
 	 * @param array $config
 	 * @param Closure $closure
-	 * @throws ReflectionException
+	 * @throws
 	 */
 	public static function group(array $config, Closure $closure)
 	{
 		$router = Kiri::getDi()->get(DataGrip::class)->get(static::$type);
 
-		array_push($router->groupTack, $config);
+		$router->groupTack[] = $config;
 
 		call_user_func($closure);
 
