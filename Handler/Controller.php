@@ -6,6 +6,8 @@ namespace Http\Handler;
 
 use Http\Constrict\RequestInterface;
 use Http\Constrict\ResponseInterface;
+use JetBrains\PhpStorm\Pure;
+use Kiri\Kiri;
 use Note\Inject;
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
@@ -19,14 +21,6 @@ use Psr\Log\LoggerInterface;
  */
 class Controller
 {
-
-
-	/**
-	 * @var ContainerInterface
-	 */
-	#[Inject(ContainerInterface::class)]
-	public ContainerInterface $container;
-
 
 	/**
 	 * @var RequestInterface
@@ -47,5 +41,25 @@ class Controller
 	 */
 	#[Inject(LoggerInterface::class)]
 	public LoggerInterface $logger;
+
+
+	/**
+	 * @return ContainerInterface
+	 */
+	#[Pure] public function getContainer(): ContainerInterface
+	{
+		return Kiri::getDi();
+	}
+
+
+	/**
+	 * @param $name
+	 * @return mixed
+	 */
+	public function __get($name): mixed
+	{
+		return $this->{'get' . ucfirst($name)}();
+	}
+
 
 }
