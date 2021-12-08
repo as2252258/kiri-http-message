@@ -19,9 +19,6 @@ class Router
 {
 
 
-	protected array $groupTack = [];
-
-
 	/**
 	 * @var array|string[]
 	 */
@@ -32,16 +29,6 @@ class Router
 	 * @var string
 	 */
 	private static string $type = ROUTER_DEFAULT_TYPE;
-
-
-	/**
-	 * @var array
-	 */
-	private array $handlers = [];
-
-
-	#[Inject(Logger::class)]
-	public Logger $logger;
 
 
 	/**
@@ -75,7 +62,7 @@ class Router
 	public static function post(string $route, string|Closure $handler): void
 	{
 		$router = Kiri::getDi()->get(DataGrip::class)->get(static::$type);
-		$router->_addRoute(['POST'], $route, $handler);
+		$router->addRoute(['POST'], $route, $handler);
 	}
 
 	/**
@@ -86,7 +73,7 @@ class Router
 	public static function get(string $route, string|Closure $handler): void
 	{
 		$router = Kiri::getDi()->get(DataGrip::class)->get(static::$type);
-		$router->_addRoute(['GET'], $route, $handler);
+		$router->addRoute(['GET'], $route, $handler);
 	}
 
 
@@ -98,7 +85,7 @@ class Router
 	public static function options(string $route, string|Closure $handler): void
 	{
 		$router = Kiri::getDi()->get(DataGrip::class)->get(static::$type);
-		$router->_addRoute(['OPTIONS'], $route, $handler);
+		$router->addRoute(['OPTIONS'], $route, $handler);
 	}
 
 
@@ -110,7 +97,7 @@ class Router
 	public static function any(string $route, string|Closure $handler): void
 	{
 		$router = Kiri::getDi()->get(DataGrip::class)->get(static::$type);
-		$router->_addRoute(self::METHODS, $route, $handler);
+		$router->addRoute(self::METHODS, $route, $handler);
 	}
 
 	/**
@@ -121,7 +108,7 @@ class Router
 	public static function delete(string $route, string|Closure $handler): void
 	{
 		$router = Kiri::getDi()->get(DataGrip::class)->get(static::$type);
-		$router->_addRoute(['DELETE'], $route, $handler);
+		$router->addRoute(['DELETE'], $route, $handler);
 	}
 
 
@@ -133,7 +120,7 @@ class Router
 	public static function head(string $route, string|Closure $handler): void
 	{
 		$router = Kiri::getDi()->get(DataGrip::class)->get(static::$type);
-		$router->_addRoute(['HEAD'], $route, $handler);
+		$router->addRoute(['HEAD'], $route, $handler);
 	}
 
 
@@ -145,7 +132,7 @@ class Router
 	public static function put(string $route, string|Closure $handler): void
 	{
 		$router = Kiri::getDi()->get(DataGrip::class)->get(static::$type);
-		$router->_addRoute(['PUT'], $route, $handler);
+		$router->addRoute(['PUT'], $route, $handler);
 	}
 
 
@@ -161,74 +148,9 @@ class Router
 		if (is_string($methods)) {
 			$methods = [$methods];
 		}
-		$router->_addRoute($methods, $route, $handler);
+		$router->addRoute($methods, $route, $handler);
 	}
 
-
-	/**
-	 * @param array $method
-	 * @param string $route
-	 * @param string|Closure|array $closure
-	 * @throws
-	 */
-	private function _addRoute(array $method, string $route, string|Closure|array $closure)
-	{
-		try {
-			$route = $this->_splicing_routing($route);
-			if ($closure instanceof Closure) {
-				$middlewares = $this->loadMiddlewares($closure, $route);
-			} else if (is_string($closure)) {
-				$this->_route_analysis($closure);
-			}
-			foreach ($method as $value) {
-				$this->handlers[$route][$value] = new Handler($route, $closure, $middlewares ?? []);
-			}
-		} catch (Throwable $throwable) {
-			$this->logger->error($throwable->getMessage(), [
-				'file' => $throwable->getFile(),
-				'line' => $throwable->getLine(),
-			]);
-		}
-	}
-
-
-	/**
-	 * @param string|Closure $closure
-	 * @throws ReflectionException
-	 */
-	private function _route_analysis(string|Closure &$closure)
-	{
-		$closure = explode('@', $closure);
-		$closure[0] = $this->addNamespace($closure[0]);
-		if (!class_exists($closure[0])) {
-			return;
-		}
-		$middleware = array_column($this->groupTack, 'middleware');
-		if (empty($middleware = array_filter($middleware))) {
-			return;
-		}
-		\map($middleware, static function ($middleware) use ($closure) {
-			MiddlewareManager::add($closure[0], $closure[1], $middleware);
-		});
-	}
-
-
-	/**
-	 * @param string $path
-	 * @param string $method
-	 * @return Handler|int|null
-	 */
-	public function find(string $path, string $method): Handler|int|null
-	{
-		if (!isset($this->handlers[$path])) {
-			return 404;
-		}
-		$handler = $this->handlers[$path][$method] ?? null;
-		if (is_null($handler)) {
-			return 405;
-		}
-		return $handler;
-	}
 
 
 	/**
@@ -245,73 +167,6 @@ class Router
 		call_user_func($closure);
 
 		array_pop($router->groupTack);
-	}
-
-
-	/**
-	 * @param string $route
-	 * @return string
-	 */
-	protected function _splicing_routing(string $route): string
-	{
-		$route = ltrim($route, '/');
-		$prefix = array_column($this->groupTack, 'prefix');
-		if (empty($prefix = array_filter($prefix))) {
-			return '/' . $route;
-		}
-		return '/' . implode('/', $prefix) . '/' . $route;
-	}
-
-
-	/**
-	 * @param $closure
-	 * @param $route
-	 * @return array
-	 * @throws ReflectionException
-	 * @throws Exception
-	 */
-	protected function loadMiddlewares($closure, $route): array
-	{
-		$middlewares = [];
-		$close = new \ReflectionFunction($closure);
-		if (!empty($close->getClosureThis())) {
-			$this->logger->warning('[' . $route . '] Static functions are recommended as callback functions.');
-		}
-		$middleware = array_column($this->groupTack, 'middleware');
-		$middleware = array_unique($middleware);
-		if (!empty($middleware = array_filter($middleware))) {
-			foreach ($middleware as $mi) {
-				if (!is_array($mi)) {
-					$mi = [$mi];
-				}
-				foreach ($mi as $item) {
-					$item = Kiri::getDi()->get($item);
-					if (!($item instanceof MiddlewareInterface)) {
-						throw new Exception('The Middleware must instance ' . MiddlewareInterface::class);
-					}
-					$middlewares[$item::class] = $item;
-				}
-			}
-			$middlewares = array_values($middlewares);
-		}
-		return $middlewares;
-	}
-
-
-	/**
-	 * @param $class
-	 * @return string|null
-	 */
-	protected function addNamespace($class): ?string
-	{
-		$middleware = array_column($this->groupTack, 'namespace');
-		if (empty($middleware = array_filter($middleware))) {
-			return $class;
-		}
-		$middleware[] = $class;
-		return implode('\\', array_map(function ($value) {
-			return trim($value, '\\');
-		}, $middleware));
 	}
 
 

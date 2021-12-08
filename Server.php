@@ -3,6 +3,7 @@
 namespace Http;
 
 
+use Http\Handler\RouterCollector;
 use Kiri\Abstracts\Component;
 use Exception;
 use Http\Abstracts\EventDispatchHelper;
@@ -34,7 +35,7 @@ class Server extends Component implements OnRequestInterface
 	use EventDispatchHelper;
 	use ResponseHelper;
 
-	public Router $router;
+	public RouterCollector $router;
 
 
 	/**

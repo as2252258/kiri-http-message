@@ -12,12 +12,12 @@ class DataGrip
 
 	/**
 	 * @param $type
-	 * @return Router
+	 * @return RouterCollector
 	 */
-	public function get($type): Router
+	public function get($type): RouterCollector
 	{
 		if (!isset($this->servers[$type])) {
-			$this->servers[$type] = Kiri::getDi()->create(Router::class);
+			$this->servers[$type] = Kiri::getDi()->create(RouterCollector::class);
 		}
 		return $this->servers[$type];
 	}
