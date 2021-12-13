@@ -7,6 +7,7 @@ namespace Http\Handler;
 use Http\Constrict\RequestInterface;
 use Http\Constrict\ResponseInterface;
 use JetBrains\PhpStorm\Pure;
+use Kiri\Di\Container;
 use Kiri\Kiri;
 use Note\Inject;
 use Psr\Container\ContainerInterface;
@@ -17,7 +18,8 @@ use Psr\Log\LoggerInterface;
  * @package Kiri\Kiri\Web
  * @property RequestInterface $request
  * @property ResponseInterface $response
- * @property LoggerInterface $
+ * @property LoggerInterface $logger
+ * @property ContainerInterface|Container $container
  */
 class Controller
 {
