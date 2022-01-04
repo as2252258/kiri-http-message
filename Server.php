@@ -3,8 +3,6 @@
 namespace Http;
 
 
-use Http\Handler\RouterCollector;
-use Kiri\Abstracts\Component;
 use Exception;
 use Http\Abstracts\EventDispatchHelper;
 use Http\Abstracts\ExceptionHandlerInterface;
@@ -14,12 +12,13 @@ use Http\Constrict\ResponseInterface;
 use Http\Handler\DataGrip;
 use Http\Handler\Dispatcher;
 use Http\Handler\Handler;
-use Http\Handler\Router;
+use Http\Handler\RouterCollector;
 use Http\Message\ServerRequest;
-use Http\Message\Stream;
+use Kiri\Abstracts\Component;
 use Kiri\Abstracts\Config;
 use Kiri\Context;
 use Kiri\Exception\ConfigException;
+use Kiri\Kiri;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -95,13 +94,12 @@ class Server extends Component implements OnRequestInterface
 	/**
 	 * @param Handler $handler
 	 * @param $PsrRequest
-	 * @return ResponseInterface
+	 * @return \Psr\Http\Message\ResponseInterface
 	 * @throws Exception
 	 */
 	protected function handler(Handler $handler, $PsrRequest): \Psr\Http\Message\ResponseInterface
 	{
-		$dispatcher = new Dispatcher($handler, $handler->middlewares);
-		return $dispatcher->handle($PsrRequest);
+		return Kiri::getDi()->get(Dispatcher::class)->with($handler)->handle($PsrRequest);
 	}
 
 

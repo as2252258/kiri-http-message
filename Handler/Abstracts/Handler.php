@@ -21,12 +21,17 @@ abstract class Handler implements RequestHandlerInterface
 	protected int $offset = 0;
 
 
+	public CHl $handler;
+
+
 	/**
 	 * @param CHl $handler
-	 * @param array|null $middlewares
+	 * @return $this
 	 */
-	public function __construct(public CHl $handler, public ?array $middlewares)
+	public function with(CHl $handler): static
 	{
+		$this->handler = $handler;
+		return $this;
 	}
 
 
@@ -37,11 +42,11 @@ abstract class Handler implements RequestHandlerInterface
 	 */
 	protected function execute(ServerRequestInterface $request): ResponseInterface
 	{
-		if (empty($this->middlewares) || !isset($this->middlewares[$this->offset])) {
+		if (empty($this->handler->middlewares) || !isset($this->handler->middlewares[$this->offset])) {
 			return $this->dispatcher($request);
 		}
 
-		$middleware = $this->middlewares[$this->offset];
+		$middleware = $this->handler->middlewares[$this->offset];
 		if (!($middleware instanceof MiddlewareInterface)) {
 			throw new Exception('get_implements_class($middleware) not found method process.');
 		}

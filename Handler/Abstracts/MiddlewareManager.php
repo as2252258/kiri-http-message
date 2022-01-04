@@ -29,7 +29,6 @@ class MiddlewareManager extends Component
 	 * @param $method
 	 * @param array|string|null $middlewares
 	 * @return bool
-	 * @throws ReflectionException
 	 */
 	public static function add($class, $method, array|string|null $middlewares): bool
 	{

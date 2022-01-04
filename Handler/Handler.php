@@ -59,7 +59,6 @@ class Handler
 	/**
 	 * @param Aspect $aspect
 	 * @param $callback
-	 * @throws ReflectionException
 	 */
 	public function recover(Aspect $aspect, $callback)
 	{
