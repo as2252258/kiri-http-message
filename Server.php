@@ -73,10 +73,10 @@ class Server extends Component implements OnRequestInterface
 			[$PsrRequest, $PsrResponse] = $this->initRequestResponse($request);
 			$handler = $this->router->find($request->server['request_uri'], $request->getMethod());
 			if (is_integer($handler)) {
-				$PsrResponse->stream->write('Allow Method[' . $request->getMethod() . '].');
+				$PsrResponse->getBody()->write('Allow Method[' . $request->getMethod() . '].');
 				$PsrResponse->withStatus($handler);
 			} else if (is_null($handler)) {
-				$PsrResponse->stream->write('Page not found.');
+				$PsrResponse->getBody()->write('Page not found.');
 				$PsrResponse->withStatus(404);
 			} else {
 				$PsrResponse = $this->handler($handler, $PsrRequest);
