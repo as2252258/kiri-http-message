@@ -71,7 +71,6 @@ class RouterCollector implements \ArrayAccess, \IteratorAggregate
 
 	/**
 	 * @param string|Closure $closure
-	 * @throws ReflectionException
 	 */
 	private function _route_analysis(string|Closure &$closure)
 	{
@@ -84,9 +83,14 @@ class RouterCollector implements \ArrayAccess, \IteratorAggregate
 		if (empty($middleware = array_filter($middleware))) {
 			return;
 		}
-		\map($middleware, static function ($middleware) use ($closure) {
-			MiddlewareManager::add($closure[0], $closure[1], $middleware);
-		});
+		foreach ($middleware as $value) {
+			if (is_string($value)) {
+				$value = [$value];
+			}
+			foreach ($value as $item) {
+				MiddlewareManager::add($closure[0], $closure[1], $item);
+			}
+		}
 	}
 
 
