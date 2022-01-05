@@ -8,6 +8,7 @@ use Http\Constrict\ResponseInterface as HttpResponseInterface;
 use Http\Handler\Handler as CHl;
 use Http\Message\ServerRequest;
 use Kiri\Core\Help;
+use Kiri\Kiri;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
@@ -46,7 +47,7 @@ abstract class Handler implements RequestHandlerInterface
 			return $this->dispatcher($request);
 		}
 
-		$middleware = $this->handler->middlewares[$this->offset];
+		$middleware = Kiri::getDi()->get($this->handler->middlewares[$this->offset]);
 		if (!($middleware instanceof MiddlewareInterface)) {
 			throw new Exception('get_implements_class($middleware) not found method process.');
 		}

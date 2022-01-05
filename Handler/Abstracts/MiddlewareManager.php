@@ -41,7 +41,6 @@ class MiddlewareManager extends Component
 		}
 		$source = &static::$_middlewares[$class][$method];
 		foreach ($middlewares as $middleware) {
-            $middleware = di($middleware);
 			if (in_array($middleware, $source)) {
 				continue;
 			}
