@@ -31,6 +31,7 @@ abstract class Handler implements RequestHandlerInterface
 	 */
 	public function with(CHl $handler): static
 	{
+		$this->offset = 0;
 		$this->handler = $handler;
 		return $this;
 	}
