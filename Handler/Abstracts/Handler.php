@@ -13,7 +13,6 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use ReflectionException;
 
 
 abstract class Handler implements RequestHandlerInterface
@@ -94,7 +93,6 @@ abstract class Handler implements RequestHandlerInterface
 	/**
 	 * @param mixed $responseData
 	 * @return ResponseInterface
-	 * @throws ReflectionException
 	 */
 	private function transferToResponse(mixed $responseData): ResponseInterface
 	{
