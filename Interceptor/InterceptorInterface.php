@@ -4,7 +4,7 @@ namespace Http\Interceptor;
 
 
 use Http\Constrict\RequestInterface;
-use Http\Handler\AuthIdentity;
+use Http\Handler\AuthorizationInterface;
 
 
 /**
