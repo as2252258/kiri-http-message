@@ -11,14 +11,12 @@ use Http\Constrict\RequestInterface;
 use Http\Constrict\ResponseInterface;
 use Http\Handler\DataGrip;
 use Http\Handler\Dispatcher;
-use Http\Handler\Handler;
 use Http\Handler\RouterCollector;
 use Http\Message\ServerRequest;
-use Kiri\Abstracts\Component;
+use Kiri\Abstracts\AbstractServer;
 use Kiri\Abstracts\Config;
 use Kiri\Context;
 use Kiri\Exception\ConfigException;
-use Kiri\Kiri;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -28,7 +26,7 @@ use Swoole\Http\Response;
 /**
  *
  */
-class Server extends Component implements OnRequestInterface
+class Server extends AbstractServer implements OnRequestInterface
 {
 
 	use EventDispatchHelper;
@@ -40,7 +38,7 @@ class Server extends Component implements OnRequestInterface
 	/**
 	 * @var ExceptionHandlerInterface
 	 */
-	public ExceptionHandlerInterface $exceptionHandler;
+	public ExceptionHandlerInterface $exception;
 
 
 	/**
@@ -50,11 +48,11 @@ class Server extends Component implements OnRequestInterface
 	 */
 	public function init()
 	{
-		$exceptionHandler = Config::get('exception.http', ExceptionHandlerDispatcher::class);
-		if (!in_array(ExceptionHandlerInterface::class, class_implements($exceptionHandler))) {
-			$exceptionHandler = ExceptionHandlerDispatcher::class;
+		$exception = Config::get('exception.http', ExceptionHandlerDispatcher::class);
+		if (!in_array(ExceptionHandlerInterface::class, class_implements($exception))) {
+			$exception = ExceptionHandlerDispatcher::class;
 		}
-		$this->exceptionHandler = $this->container->get($exceptionHandler);
+		$this->exception = $this->container->get($exception);
 		$this->responseEmitter = $this->container->get(ResponseEmitter::class);
 
 		$this->router = $this->container->get(DataGrip::class)->get('http');
@@ -72,16 +70,14 @@ class Server extends Component implements OnRequestInterface
 			[$PsrRequest, $PsrResponse] = $this->initRequestResponse($request);
 			$handler = $this->router->find($request->server['request_uri'], $request->getMethod());
 			if (is_integer($handler)) {
-				$PsrResponse->getBody()->write('Allow Method[' . $request->getMethod() . '].');
-				$PsrResponse->withStatus($handler);
+				$this->fail($PsrResponse, 'Allow Method[' . $request->getMethod() . '].', $handler);
 			} else if (is_null($handler)) {
-				$PsrResponse->getBody()->write('Page not found.');
-				$PsrResponse->withStatus(404);
+				$this->fail($PsrResponse, 'Page not found.', 404);
 			} else {
-				$PsrResponse = $this->handler($handler, $PsrRequest);
+				$PsrResponse = $this->getContainer()->get(Dispatcher::class)->with($handler)->handle($PsrRequest);
 			}
 		} catch (\Throwable $throwable) {
-			$PsrResponse = $this->exceptionHandler->emit($throwable, $this->response);
+			$PsrResponse = $this->exception->emit($throwable, $this->response);
 		} finally {
 			if ($request->server['request_method'] == 'HEAD') {
 				$PsrResponse->getBody()->write('');
@@ -92,14 +88,15 @@ class Server extends Component implements OnRequestInterface
 
 
 	/**
-	 * @param Handler $handler
-	 * @param $PsrRequest
-	 * @return \Psr\Http\Message\ResponseInterface
-	 * @throws Exception
+	 * @param $PsrResponse
+	 * @param $message
+	 * @param $code
+	 * @return void
 	 */
-	protected function handler(Handler $handler, $PsrRequest): \Psr\Http\Message\ResponseInterface
+	private function fail($PsrResponse, $message, $code)
 	{
-		return Kiri::getDi()->get(Dispatcher::class)->with($handler)->handle($PsrRequest);
+		$PsrResponse->getBody()->write($message);
+		$PsrResponse->withStatus($code);
 	}
 
 
