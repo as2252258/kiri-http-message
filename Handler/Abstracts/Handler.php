@@ -9,6 +9,7 @@ use Http\Handler\Handler as CHl;
 use Http\Message\ServerRequest;
 use Kiri\Core\Help;
 use Kiri\Kiri;
+use Note\Inject;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
@@ -22,6 +23,10 @@ abstract class Handler implements RequestHandlerInterface
 
 
 	public CHl $handler;
+
+
+	#[Inject(HttpResponseInterface::class)]
+	public HttpResponseInterface $response;
 
 
 	/**
@@ -65,6 +70,9 @@ abstract class Handler implements RequestHandlerInterface
 	 */
 	public function dispatcher(ServerRequestInterface $request): mixed
 	{
+//		if ($this->response->getBody()->getSize() > 0) {
+//			return $this->response;
+//		}
 		$response = call_user_func($this->handler->callback, ...$this->handler->params);
 		if (!($response instanceof ResponseInterface)) {
 			$response = $this->transferToResponse($response);
@@ -96,7 +104,7 @@ abstract class Handler implements RequestHandlerInterface
 	 */
 	private function transferToResponse(mixed $responseData): ResponseInterface
 	{
-		$interface = di(HttpResponseInterface::class)->withStatus(200);
+		$interface = $this->response->withStatus(200);
 		if (!$interface->hasContentType()) {
 			$interface->withContentType('application/json;charset=utf-8');
 		}
