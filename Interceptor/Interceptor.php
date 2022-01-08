@@ -5,7 +5,7 @@ namespace Http\Interceptor;
 
 use Kiri\Events\EventProvider;
 use Kiri\Kiri;
-use Note\Attribute;
+use Kiri\Annotation\Attribute;
 
 #[\Attribute(\Attribute::TARGET_METHOD)] class Interceptor extends Attribute
 {

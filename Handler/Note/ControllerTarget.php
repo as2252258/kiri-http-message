@@ -1,8 +1,8 @@
 <?php
 
-namespace Http\Handler\Note;
+namespace Http\Handler\Annotation;
 
-use Note\Attribute;
+use Kiri\Annotation\Attribute;
 
 #[\Attribute(\Attribute::TARGET_CLASS)] class ControllerTarget extends Attribute
 {

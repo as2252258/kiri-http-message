@@ -7,7 +7,7 @@ use Exception;
 use Http\Handler\Abstracts\MiddlewareManager;
 use Kiri\Error\Logger;
 use Kiri\Kiri;
-use Note\Inject;
+use Kiri\Annotation\Inject;
 use Psr\Http\Server\MiddlewareInterface;
 use ReflectionException;
 use Throwable;

@@ -9,7 +9,7 @@ use Http\Constrict\ResponseInterface;
 use JetBrains\PhpStorm\Pure;
 use Kiri\Di\Container;
 use Kiri\Kiri;
-use Note\Inject;
+use Kiri\Annotation\Inject;
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
 

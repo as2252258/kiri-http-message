@@ -9,7 +9,7 @@ use Http\Handler\Handler as CHl;
 use Http\Message\ServerRequest;
 use Kiri\Core\Help;
 use Kiri\Kiri;
-use Note\Inject;
+use Kiri\Annotation\Inject;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;

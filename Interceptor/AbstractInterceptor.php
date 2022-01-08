@@ -5,7 +5,7 @@ namespace Http\Interceptor;
 
 
 use Http\Constrict\ResponseInterface;
-use Note\Inject;
+use Kiri\Annotation\Inject;
 
 abstract class AbstractInterceptor implements InterceptorInterface
 {
