@@ -6,7 +6,7 @@ use Closure;
 use Http\Aspect\JoinPoint;
 use Http\Aspect\OnAspectInterface;
 use Http\Handler\Abstracts\MiddlewareManager;
-use Kiri\Di\AnnotationManager;
+use Kiri\Di\NoteManager;
 use Kiri\Kiri;
 use Kiri\Annotation\Aspect;
 use ReflectionException;
@@ -46,7 +46,7 @@ class Handler
 		}
 		$this->middlewares = MiddlewareManager::get($callback);
 
-		$aspect = AnnotationManager::getSpecify_annotation(Aspect::class, $callback[0], $callback[1]);
+		$aspect = NoteManager::getSpecify_annotation(Aspect::class, $callback[0], $callback[1]);
 		$callback[0] = Kiri::getDi()->get($callback[0]);
 		if (!is_null($aspect)) {
 			$this->recover($aspect, $callback);

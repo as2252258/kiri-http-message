@@ -6,7 +6,7 @@ use Kiri\Annotation\Aspect;
 use Closure;
 use Exception;
 use Psr\Http\Server\MiddlewareInterface;
-use Kiri\Di\AnnotationManager;
+use Kiri\Di\NoteManager;
 use Kiri\IAspect;
 use Kiri\Kiri;
 use ReflectionException;
@@ -110,7 +110,7 @@ class Pipeline
 	{
 		[$controller, $action] = $destination;
 		/** @var Aspect $aop */
-		$aop = AnnotationManager::getSpecify_annotation(Aspect::class, $controller::class, $action);
+		$aop = NoteManager::getSpecify_annotation(Aspect::class, $controller::class, $action);
 		if (!empty($aop)) {
 			$aop = Kiri::getDi()->get($aop->aspect);
 			$destination = static function () use ($aop, $destination, $parameters) {
