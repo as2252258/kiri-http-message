@@ -7,6 +7,7 @@ use Kiri\Kiri;
 
 trait AccessToken
 {
+    
 
 
 	/**
