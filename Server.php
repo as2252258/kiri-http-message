@@ -12,7 +12,6 @@ use Kiri\Message\Constrict\ResponseInterface;
 use Kiri\Message\Handler\DataGrip;
 use Kiri\Message\Handler\Dispatcher;
 use Kiri\Message\Handler\RouterCollector;
-use Kiri\Message\ServerRequest;
 use Kiri\Abstracts\AbstractServer;
 use Kiri\Abstracts\Config;
 use Kiri\Context;
@@ -107,7 +106,7 @@ class Server extends AbstractServer implements OnRequestInterface
 	 */
 	private function initRequestResponse(Request $request): array
 	{
-		$PsrResponse = Context::setContext(ResponseInterface::class, new Message\Response());
+		$PsrResponse = Context::setContext(ResponseInterface::class, new Constrict\Response());
 
 		$PsrRequest = Context::setContext(RequestInterface::class, ServerRequest::createServerRequest($request));
 		if ($PsrRequest->isMethod('OPTIONS')) {
