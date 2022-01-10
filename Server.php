@@ -106,7 +106,7 @@ class Server extends AbstractServer implements OnRequestInterface
 	 */
 	private function initRequestResponse(Request $request): array
 	{
-		$PsrResponse = Context::setContext(ResponseInterface::class, new Constrict\Response());
+		$PsrResponse = Context::setContext(ResponseInterface::class, new \Kiri\Message\Response());
 
 		$PsrRequest = Context::setContext(RequestInterface::class, ServerRequest::createServerRequest($request));
 		if ($PsrRequest->isMethod('OPTIONS')) {
