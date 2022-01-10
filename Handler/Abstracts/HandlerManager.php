@@ -14,9 +14,9 @@ class HandlerManager
 	/**
 	 * @param string $path
 	 * @param string $method
-	 * @param \Http\Handler\Handler|Closure $handler
+	 * @param \Kiri\Message\Handler\Handler|Closure $handler
 	 */
-	public static function add(string $path, string $method, \Http\Handler\Handler|Closure $handler)
+	public static function add(string $path, string $method, \Kiri\Message\Handler\Handler|Closure $handler)
 	{
 		if (!isset(static::$handlers[$path])) {
 			static::$handlers[$path] = [];
@@ -30,7 +30,7 @@ class HandlerManager
 	 * @param $method
 	 * @return null|int|array|Closure
 	 */
-	public static function get($path, $method): null|int|\Http\Handler\Handler|Closure
+	public static function get($path, $method): null|int|\Kiri\Message\Handler\Handler|Closure
 	{
 		if (!isset(static::$handlers[$path])) {
 			return null;

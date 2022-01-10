@@ -11,7 +11,7 @@ use Psr\Http\Message\ServerRequestInterface;
 /**
  *
  */
-class Dispatcher extends \Http\Handler\Abstracts\Handler
+class Dispatcher extends \Kiri\Message\Handler\Abstracts\Handler
 {
 
 
