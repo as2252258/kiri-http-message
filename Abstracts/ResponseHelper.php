@@ -1,10 +1,10 @@
 <?php
 
-namespace Http\Abstracts;
+namespace Kiri\Message\Abstracts;
 
 use Kiri\Annotation\Inject;
-use Http\Emitter;
-use Http\Constrict\Response as CResponse;
+use Kiri\Message\Emitter;
+use Kiri\Message\Constrict\Response as CResponse;
 
 
 /**

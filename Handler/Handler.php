@@ -1,11 +1,11 @@
 <?php
 
-namespace Http\Handler;
+namespace Kiri\Message\Handler;
 
 use Closure;
-use Http\Aspect\JoinPoint;
-use Http\Aspect\OnAspectInterface;
-use Http\Handler\Abstracts\MiddlewareManager;
+use Kiri\Message\Aspect\JoinPoint;
+use Kiri\Message\Aspect\OnAspectInterface;
+use Kiri\Message\Handler\Abstracts\MiddlewareManager;
 use Kiri\Di\NoteManager;
 use Kiri\Kiri;
 use Kiri\Annotation\Aspect;

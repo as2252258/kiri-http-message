@@ -1,6 +1,6 @@
 <?php
 
-namespace Http\Abstracts;
+namespace Kiri\Message\Abstracts;
 
 use Kiri\Annotation\Inject;
 use Kiri\Events\EventDispatch;

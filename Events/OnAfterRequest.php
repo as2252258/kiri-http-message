@@ -1,6 +1,6 @@
 <?php
 
-namespace Http\Events;
+namespace Kiri\Message\Events;
 
 class OnAfterRequest
 {

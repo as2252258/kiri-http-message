@@ -1,10 +1,10 @@
 <?php
 
-namespace Http\Handler\Abstracts;
+namespace Kiri\Message\Handler\Abstracts;
 
 use Kiri\Annotation\Inject;
 use Psr\Http\Server\MiddlewareInterface;
-use Http\Constrict\ResponseInterface;
+use Kiri\Message\Constrict\ResponseInterface;
 
 
 /**

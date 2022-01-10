@@ -1,10 +1,10 @@
 <?php
 
-namespace Http\Interceptor;
+namespace Kiri\Message\Interceptor;
 
 
 
-use Http\Constrict\ResponseInterface;
+use Kiri\Message\Constrict\ResponseInterface;
 use Kiri\Annotation\Inject;
 
 abstract class AbstractInterceptor implements InterceptorInterface

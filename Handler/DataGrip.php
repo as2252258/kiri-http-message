@@ -1,6 +1,6 @@
 <?php
 
-namespace Http\Handler;
+namespace Kiri\Message\Handler;
 
 use Kiri\Kiri;
 

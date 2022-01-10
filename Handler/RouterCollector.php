@@ -1,11 +1,11 @@
 <?php
 
-namespace Http\Handler;
+namespace Kiri\Message\Handler;
 
 
 use Closure;
 use Exception;
-use Http\Handler\Abstracts\MiddlewareManager;
+use Kiri\Message\Handler\Abstracts\MiddlewareManager;
 use Kiri\Kiri;
 use Kiri\Annotation\Inject;
 use Psr\Http\Server\MiddlewareInterface;

@@ -1,10 +1,10 @@
 <?php
 
-namespace Http\Abstracts;
+namespace Kiri\Message\Abstracts;
 
-use Http\Constrict\Response;
+use Kiri\Message\Constrict\Response;
 use Throwable;
-use Http\Constrict\ResponseInterface;
+use Kiri\Message\Constrict\ResponseInterface;
 
 /**
  *

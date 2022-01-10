@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Http\Handler\Abstracts;
+namespace Kiri\Message\Handler\Abstracts;
 
 
 use Closure;

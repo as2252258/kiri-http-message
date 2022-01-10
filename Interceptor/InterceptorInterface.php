@@ -1,10 +1,10 @@
 <?php
 
-namespace Http\Interceptor;
+namespace Kiri\Message\Interceptor;
 
 
-use Http\Constrict\RequestInterface;
-use Http\Handler\AuthorizationInterface;
+use Kiri\Message\Constrict\RequestInterface;
+use Kiri\Message\Handler\AuthorizationInterface;
 
 
 /**

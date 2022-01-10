@@ -1,13 +1,13 @@
 <?php
 
-namespace Http;
+namespace Kiri\Message;
 
 
-use Http\Message\ContentType;
-use Http\Message\Stream;
-use Http\Constrict\Response;
-use Http\Constrict\ResponseInterface;
-use Http\Abstracts\ExceptionHandlerInterface;
+use Kiri\Message\ContentType;
+use Kiri\Message\Stream;
+use Kiri\Message\Constrict\Response;
+use Kiri\Message\Constrict\ResponseInterface;
+use Kiri\Message\Abstracts\ExceptionHandlerInterface;
 use Throwable;
 
 

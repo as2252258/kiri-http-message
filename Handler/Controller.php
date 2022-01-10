@@ -1,11 +1,11 @@
 <?php
 declare(strict_types=1);
 
-namespace Http\Handler;
+namespace Kiri\Message\Handler;
 
 
-use Http\Constrict\RequestInterface;
-use Http\Constrict\ResponseInterface;
+use Kiri\Message\Constrict\RequestInterface;
+use Kiri\Message\Constrict\ResponseInterface;
 use JetBrains\PhpStorm\Pure;
 use Kiri\Di\Container;
 use Kiri\Kiri;

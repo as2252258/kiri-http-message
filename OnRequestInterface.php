@@ -1,6 +1,6 @@
 <?php
 
-namespace Http;
+namespace Kiri\Message;
 
 use Swoole\Http\Request;
 use Swoole\Http\Response;

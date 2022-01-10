@@ -1,6 +1,6 @@
 <?php
 
-namespace Http\Handler\Annotation;
+namespace Kiri\Message\Handler\Annotation;
 
 use Kiri\Annotation\Attribute;
 

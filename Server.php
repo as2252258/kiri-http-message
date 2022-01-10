@@ -1,18 +1,18 @@
 <?php
 
-namespace Http;
+namespace Kiri\Message;
 
 
 use Exception;
-use Http\Abstracts\EventDispatchHelper;
-use Http\Abstracts\ExceptionHandlerInterface;
-use Http\Abstracts\ResponseHelper;
-use Http\Constrict\RequestInterface;
-use Http\Constrict\ResponseInterface;
-use Http\Handler\DataGrip;
-use Http\Handler\Dispatcher;
-use Http\Handler\RouterCollector;
-use Http\Message\ServerRequest;
+use Kiri\Message\Abstracts\EventDispatchHelper;
+use Kiri\Message\Abstracts\ExceptionHandlerInterface;
+use Kiri\Message\Abstracts\ResponseHelper;
+use Kiri\Message\Constrict\RequestInterface;
+use Kiri\Message\Constrict\ResponseInterface;
+use Kiri\Message\Handler\DataGrip;
+use Kiri\Message\Handler\Dispatcher;
+use Kiri\Message\Handler\RouterCollector;
+use Kiri\Message\ServerRequest;
 use Kiri\Abstracts\AbstractServer;
 use Kiri\Abstracts\Config;
 use Kiri\Context;

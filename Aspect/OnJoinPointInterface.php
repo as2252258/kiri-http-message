@@ -1,6 +1,6 @@
 <?php
 
-namespace Http\Aspect;
+namespace Kiri\Message\Aspect;
 
 interface OnJoinPointInterface
 {

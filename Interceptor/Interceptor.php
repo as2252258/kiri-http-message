@@ -1,6 +1,6 @@
 <?php
 
-namespace Http\Interceptor;
+namespace Kiri\Message\Interceptor;
 
 
 use Kiri\Events\EventProvider;

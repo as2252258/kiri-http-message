@@ -1,6 +1,6 @@
 <?php
 
-namespace Http\Abstracts;
+namespace Kiri\Message\Abstracts;
 
 
 use JetBrains\PhpStorm\Pure;

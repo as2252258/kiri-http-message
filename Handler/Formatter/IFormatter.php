@@ -7,7 +7,7 @@ declare(strict_types=1);
  * Time: 17:29
  */
 
-namespace Http\Handler\Formatter;
+namespace Kiri\Message\Handler\Formatter;
 
 
 /**

@@ -1,12 +1,12 @@
 <?php
 
-namespace Http\Handler\Abstracts;
+namespace Kiri\Message\Handler\Abstracts;
 
 
 use Exception;
-use Http\Constrict\ResponseInterface as HttpResponseInterface;
-use Http\Handler\Handler as CHl;
-use Http\Message\ServerRequest;
+use Kiri\Message\Constrict\ResponseInterface as HttpResponseInterface;
+use Kiri\Message\Handler\Handler as CHl;
+use Kiri\Message\ServerRequest;
 use Kiri\Core\Help;
 use Kiri\Kiri;
 use Kiri\Annotation\Inject;

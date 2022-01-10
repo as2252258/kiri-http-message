@@ -1,10 +1,10 @@
 <?php
 
-namespace Http\Handler;
+namespace Kiri\Message\Handler;
 
 use Exception;
-use Http\Handler\Abstracts\Middleware;
-use Http\Message\ServerRequest;
+use Kiri\Message\Handler\Abstracts\Middleware;
+use Kiri\Message\ServerRequest;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;

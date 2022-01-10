@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Http\Handler\Abstracts;
+namespace Kiri\Message\Handler\Abstracts;
 
 
 use Exception;

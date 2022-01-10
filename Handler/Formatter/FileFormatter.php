@@ -1,9 +1,9 @@
 <?php
 
-namespace Http\Handler\Formatter;
+namespace Kiri\Message\Handler\Formatter;
 
 use Exception;
-use Http\Handler\Abstracts\HttpService;
+use Kiri\Message\Handler\Abstracts\HttpService;
 use Swoole\Http\Response;
 
 

@@ -7,9 +7,9 @@
  */
 declare(strict_types=1);
 
-namespace Http\Handler\Formatter;
+namespace Kiri\Message\Handler\Formatter;
 
-use Http\Handler\Abstracts\HttpService;
+use Kiri\Message\Handler\Abstracts\HttpService;
 
 /**
  * Class JsonFormatter
