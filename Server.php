@@ -76,6 +76,7 @@ class Server extends AbstractServer implements OnRequestInterface
 				$PsrResponse = $this->getContainer()->get(Dispatcher::class)->with($handler)->handle($PsrRequest);
 			}
 		} catch (\Throwable $throwable) {
+			$this->logger()->error(error_trigger_format($throwable));
 			$PsrResponse = $this->exception->emit($throwable, $this->response);
 		} finally {
 			if ($request->server['request_method'] == 'HEAD') {
