@@ -164,16 +164,6 @@ class Router
 
 
 	/**
-	 * @throws Exception
-	 */
-	public function read_files()
-	{
-		scan_directory(CONTROLLER_PATH, 'app\Controller');
-		$this->scan_build_route(APP_PATH . 'routes');
-	}
-
-
-	/**
 	 * @throws \ReflectionException
 	 * @throws Exception
 	 */
@@ -186,15 +176,6 @@ class Router
 		for ($i = 0; $i < count($files); $i++) {
 			is_dir($files[$i]) ? $this->scan_build_route($files[$i]) : $this->resolve_file($files[$i]);
 		}
-	}
-
-
-	/**
-	 * @param $files
-	 * @throws Exception
-	 */
-	private function _load($files): void
-	{
 	}
 
 
