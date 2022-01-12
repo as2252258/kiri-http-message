@@ -4,6 +4,10 @@ namespace Kiri\Message;
 
 
 use Exception;
+use Kiri\Abstracts\AbstractServer;
+use Kiri\Abstracts\Config;
+use Kiri\Context;
+use Kiri\Exception\ConfigException;
 use Kiri\Message\Abstracts\EventDispatchHelper;
 use Kiri\Message\Abstracts\ExceptionHandlerInterface;
 use Kiri\Message\Abstracts\ResponseHelper;
@@ -12,10 +16,6 @@ use Kiri\Message\Constrict\ResponseInterface;
 use Kiri\Message\Handler\DataGrip;
 use Kiri\Message\Handler\Dispatcher;
 use Kiri\Message\Handler\RouterCollector;
-use Kiri\Abstracts\AbstractServer;
-use Kiri\Abstracts\Config;
-use Kiri\Context;
-use Kiri\Exception\ConfigException;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -109,6 +109,7 @@ class Server extends AbstractServer implements OnRequestInterface
 	{
 		$PsrResponse = Context::setContext(ResponseInterface::class, new \Kiri\Message\Response());
 
+		/** @var ServerRequest $PsrRequest */
 		$PsrRequest = Context::setContext(RequestInterface::class, ServerRequest::createServerRequest($request));
 		if ($PsrRequest->isMethod('OPTIONS')) {
 			$request->server['request_uri'] = '/*';
