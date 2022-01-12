@@ -175,14 +175,16 @@ class Router
 
 	/**
 	 * @throws \ReflectionException
+	 * @throws Exception
 	 */
-	public function scan_build_route()
+	public function scan_build_route($path = '')
 	{
-		scan_directory(CONTROLLER_PATH, 'app\Controller');
-
+		if ($path == '') {
+			scan_directory(CONTROLLER_PATH, 'app\Controller');
+		}
 		$files = glob(APP_PATH . 'routes' . '/*');
 		for ($i = 0; $i < count($files); $i++) {
-			is_dir($files) ? $this->scan_build_route($files) : $this->resolve_file($files);
+			is_dir($files[$i]) ? $this->scan_build_route($files[$i]) : $this->resolve_file($files[$i]);
 		}
 	}
 
