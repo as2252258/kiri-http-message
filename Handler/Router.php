@@ -4,13 +4,7 @@ namespace Kiri\Message\Handler;
 
 use Closure;
 use Exception;
-use Kiri\Message\Handler\Abstracts\MiddlewareManager;
-use Kiri\Error\Logger;
 use Kiri;
-use Kiri\Annotation\Inject;
-use Psr\Http\Server\MiddlewareInterface;
-use ReflectionException;
-use Throwable;
 
 
 const ROUTER_DEFAULT_TYPE = 'http';
@@ -152,7 +146,6 @@ class Router
 	}
 
 
-
 	/**
 	 * @param array $config
 	 * @param Closure $closure
@@ -175,20 +168,21 @@ class Router
 	 */
 	public function read_files()
 	{
-		$this->loadRouteDir(APP_PATH . 'routes');
+		scan_directory(CONTROLLER_PATH, 'app\Controller');
+		$this->scan_build_route(APP_PATH . 'routes');
 	}
 
 
 	/**
-	 * @param $path
-	 * @throws Exception
-	 * 加载目录下的路由文件
+	 * @throws \ReflectionException
 	 */
-	private function loadRouteDir($path)
+	public function scan_build_route()
 	{
-		$files = glob($path . '/*');
+		scan_directory(CONTROLLER_PATH, 'app\Controller');
+
+		$files = glob(APP_PATH . 'routes' . '/*');
 		for ($i = 0; $i < count($files); $i++) {
-			$this->_load($files[$i]);
+			is_dir($files) ? $this->scan_build_route($files) : $this->resolve_file($files);
 		}
 	}
 
@@ -199,11 +193,6 @@ class Router
 	 */
 	private function _load($files): void
 	{
-		if (!is_dir($files)) {
-			$this->loadRouterFile($files);
-		} else {
-			$this->loadRouteDir($files);
-		}
 	}
 
 
@@ -211,9 +200,13 @@ class Router
 	 * @param $files
 	 * @throws Exception
 	 */
-	private function loadRouterFile($files)
+	private function resolve_file($files)
 	{
-		include_once "$files";
+		try {
+			include_once "$files";
+		} catch (\Throwable $throwable) {
+
+		}
 	}
 
 
