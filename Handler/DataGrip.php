@@ -2,7 +2,7 @@
 
 namespace Kiri\Message\Handler;
 
-use Kiri\Kiri;
+use Kiri;
 
 class DataGrip
 {

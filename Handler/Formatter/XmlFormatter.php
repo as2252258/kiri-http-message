@@ -18,7 +18,7 @@ use Swoole\Http\Response;
 
 /**
  * Class XmlFormatter
- * @package Kiri\Kiri\Http\Formatter
+ * @package Kiri\Http\Formatter
  */
 class XmlFormatter extends HttpService implements IFormatter
 {

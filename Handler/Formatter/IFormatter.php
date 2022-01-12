@@ -12,7 +12,7 @@ namespace Kiri\Message\Handler\Formatter;
 
 /**
  * Interface IFormatter
- * @package Kiri\Kiri\Http\Formatter
+ * @package Kiri\Http\Formatter
  */
 interface IFormatter
 {

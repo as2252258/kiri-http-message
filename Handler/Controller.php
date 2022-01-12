@@ -8,14 +8,14 @@ use Kiri\Message\Constrict\RequestInterface;
 use Kiri\Message\Constrict\ResponseInterface;
 use JetBrains\PhpStorm\Pure;
 use Kiri\Di\Container;
-use Kiri\Kiri;
+use Kiri;
 use Kiri\Annotation\Inject;
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
 
 /**
  * Class WebController
- * @package Kiri\Kiri\Web
+ * @package Kiri\Web
  * @property RequestInterface $request
  * @property ResponseInterface $response
  * @property LoggerInterface $logger

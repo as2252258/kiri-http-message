@@ -7,7 +7,7 @@ use Kiri\Message\Aspect\JoinPoint;
 use Kiri\Message\Aspect\OnAspectInterface;
 use Kiri\Message\Handler\Abstracts\MiddlewareManager;
 use Kiri\Di\NoteManager;
-use Kiri\Kiri;
+use Kiri;
 use Kiri\Annotation\Aspect;
 use ReflectionException;
 

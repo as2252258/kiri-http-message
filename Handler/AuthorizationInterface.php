@@ -7,7 +7,7 @@ namespace Kiri\Message\Handler;
 
 /**
  * Interface AuthorizationInterface
- * @package Kiri\Kiri\Http
+ * @package Kiri\Http
  */
 interface AuthorizationInterface
 {

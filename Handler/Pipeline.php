@@ -8,7 +8,7 @@ use Exception;
 use Psr\Http\Server\MiddlewareInterface;
 use Kiri\Di\NoteManager;
 use Kiri\IAspect;
-use Kiri\Kiri;
+use Kiri;
 use ReflectionException;
 use Throwable;
 

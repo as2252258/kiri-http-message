@@ -6,7 +6,7 @@ namespace Kiri\Message\Handler;
 use Closure;
 use Exception;
 use Kiri\Message\Handler\Abstracts\MiddlewareManager;
-use Kiri\Kiri;
+use Kiri;
 use Kiri\Annotation\Inject;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Log\LoggerInterface;

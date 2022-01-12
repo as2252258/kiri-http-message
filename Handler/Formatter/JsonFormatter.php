@@ -13,7 +13,7 @@ use Kiri\Message\Handler\Abstracts\HttpService;
 
 /**
  * Class JsonFormatter
- * @package Kiri\Kiri\Http\Formatter
+ * @package Kiri\Http\Formatter
  */
 class JsonFormatter extends HttpService implements IFormatter
 {

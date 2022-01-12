@@ -3,7 +3,7 @@
 namespace Kiri\Message\Handler;
 
 use Kiri\Jwt\JWTAuthInterface;
-use Kiri\Kiri;
+use Kiri;
 
 trait AccessToken
 {

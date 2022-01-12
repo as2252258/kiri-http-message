@@ -6,7 +6,7 @@ namespace Kiri\Message\Handler\Abstracts;
 
 use Exception;
 use Kiri\Abstracts\Component;
-use Kiri\Kiri;
+use Kiri;
 
 
 /**

@@ -8,7 +8,7 @@ use Kiri\Message\Constrict\ResponseInterface as HttpResponseInterface;
 use Kiri\Message\Handler\Handler as CHl;
 use Kiri\Message\ServerRequest;
 use Kiri\Core\Help;
-use Kiri\Kiri;
+use Kiri;
 use Kiri\Annotation\Inject;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
