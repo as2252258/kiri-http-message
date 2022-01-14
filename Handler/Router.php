@@ -190,7 +190,7 @@ class Router
 		for ($i = 0; $i < count($files); $i++) {
 			$file = $files[$i];
 			if (is_dir($file)) {
-//				$this->read_dir_file($file);
+				$this->read_dir_file($file);
 			} else {
 				$this->resolve_file($file);
 			}
