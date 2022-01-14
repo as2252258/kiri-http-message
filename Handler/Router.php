@@ -164,18 +164,13 @@ class Router
 
 
 	/**
-	 * @throws \ReflectionException
 	 * @throws Exception
 	 */
-	public function scan_build_route($path = '')
+	public function scan_build_route()
 	{
-		try {
-			scan_directory(CONTROLLER_PATH, 'app\Controller');
+		scan_directory(CONTROLLER_PATH, 'app\Controller');
 
-			$this->read_dir_file(APP_PATH . 'routes');
-		} catch (\Throwable $throwable) {
-			var_dump($throwable->getMessage());
-		}
+		$this->read_dir_file(APP_PATH . 'routes');
 	}
 
 
