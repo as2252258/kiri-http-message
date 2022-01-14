@@ -196,7 +196,7 @@ class Router
 			}
 			include_once "$files";
 		} catch (\Throwable $throwable) {
-
+			var_dump($throwable->getMessage());
 		}
 	}
 
