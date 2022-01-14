@@ -171,7 +171,7 @@ class Router
 	{
 		try {
 			if ($path == '') {
-				scan_directory(CONTROLLER_PATH, 'app\Controller');
+//				scan_directory(CONTROLLER_PATH, 'app\Controller');
 			}
 			$files = glob(APP_PATH . 'routes' . '/*');
 			for ($i = 0; $i < count($files); $i++) {
