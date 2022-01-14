@@ -46,6 +46,7 @@ class MiddlewareManager extends Component
 			}
 			$source[] = $middleware;
 		}
+		unset($source);
 		return true;
 	}
 
