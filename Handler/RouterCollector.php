@@ -132,7 +132,7 @@ class RouterCollector implements \ArrayAccess, \IteratorAggregate
 					if (!($item instanceof MiddlewareInterface)) {
 						throw new Exception('The Middleware must instance ' . MiddlewareInterface::class);
 					}
-					$middlewares[$item::class] = $item;
+					$middlewares[$item::class] = $item::class;
 				}
 			}
 			$middlewares = array_values($middlewares);
