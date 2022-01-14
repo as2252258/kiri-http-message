@@ -5,9 +5,9 @@ namespace Kiri\Message\Handler;
 
 use Closure;
 use Exception;
-use Kiri\Message\Handler\Abstracts\MiddlewareManager;
 use Kiri;
 use Kiri\Annotation\Inject;
+use Kiri\Message\Handler\Abstracts\MiddlewareManager;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Log\LoggerInterface;
 use ReflectionException;
@@ -128,11 +128,10 @@ class RouterCollector implements \ArrayAccess, \IteratorAggregate
 					$mi = [$mi];
 				}
 				foreach ($mi as $item) {
-					$item = Kiri::getDi()->get($item);
-					if (!($item instanceof MiddlewareInterface)) {
+					if (!in_array(MiddlewareInterface::class, class_implements($item))) {
 						throw new Exception('The Middleware must instance ' . MiddlewareInterface::class);
 					}
-					$middlewares[$item::class] = $item::class;
+					$middlewares[$item::class] = $item;
 				}
 			}
 			$middlewares = array_values($middlewares);
