@@ -169,17 +169,21 @@ class Router
 	 */
 	public function scan_build_route($path = '')
 	{
-		if ($path == '') {
-			scan_directory(CONTROLLER_PATH, 'app\Controller');
-		}
-		$files = glob(APP_PATH . 'routes' . '/*');
-		for ($i = 0; $i < count($files); $i++) {
-			$file = $files[$i];
-			if (is_dir($file)) {
-				$this->scan_build_route($file);
-			} else {
-				$this->resolve_file($file);
+		try {
+			if ($path == '') {
+				scan_directory(CONTROLLER_PATH, 'app\Controller');
 			}
+			$files = glob(APP_PATH . 'routes' . '/*');
+			for ($i = 0; $i < count($files); $i++) {
+				$file = $files[$i];
+				if (is_dir($file)) {
+					$this->scan_build_route($file);
+				} else {
+					$this->resolve_file($file);
+				}
+			}
+		} catch (\Throwable $throwable) {
+			var_dump($throwable->getMessage());
 		}
 	}
 
