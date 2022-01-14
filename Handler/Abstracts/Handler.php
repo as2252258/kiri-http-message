@@ -52,6 +52,8 @@ abstract class Handler implements RequestHandlerInterface
 			return $this->dispatcher($request);
 		}
 
+		var_dump($request->getUri()->getPath());
+
 		$middleware = Kiri::getDi()->get($this->handler->middlewares[$this->offset]);
 		if (!($middleware instanceof MiddlewareInterface)) {
 			throw new Exception('get_implements_class($middleware) not found method process.');
