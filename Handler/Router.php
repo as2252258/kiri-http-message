@@ -174,7 +174,12 @@ class Router
 		}
 		$files = glob(APP_PATH . 'routes' . '/*');
 		for ($i = 0; $i < count($files); $i++) {
-			is_dir($files[$i]) ? $this->scan_build_route($files[$i]) : $this->resolve_file($files[$i]);
+			$file = $files[$i];
+			if (is_dir($file)) {
+				$this->scan_build_route($file);
+			} else {
+				$this->resolve_file($file);
+			}
 		}
 	}
 
