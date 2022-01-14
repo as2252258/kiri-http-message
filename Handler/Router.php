@@ -170,20 +170,30 @@ class Router
 	public function scan_build_route($path = '')
 	{
 		try {
-			if ($path == '') {
-				scan_directory(CONTROLLER_PATH, 'app\Controller');
-			}
-//			$files = glob(APP_PATH . 'routes' . '/*');
-//			for ($i = 0; $i < count($files); $i++) {
-//				$file = $files[$i];
-//				if (is_dir($file)) {
-//					$this->scan_build_route($file);
-//				} else {
-//					$this->resolve_file($file);
-//				}
-//			}
+			scan_directory(CONTROLLER_PATH, 'app\Controller');
+
+			$this->read_dir_file(APP_PATH . 'routes');
 		} catch (\Throwable $throwable) {
 			var_dump($throwable->getMessage());
+		}
+	}
+
+
+	/**
+	 * @param $path
+	 * @return void
+	 * @throws Exception
+	 */
+	private function read_dir_file($path)
+	{
+		$files = glob($path . '/*');
+		for ($i = 0; $i < count($files); $i++) {
+			$file = $files[$i];
+			if (is_dir($file)) {
+//				$this->read_dir_file($file);
+			} else {
+				$this->resolve_file($file);
+			}
 		}
 	}
 
