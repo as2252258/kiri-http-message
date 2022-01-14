@@ -117,7 +117,7 @@ class RouterCollector implements \ArrayAccess, \IteratorAggregate
 	{
 		$middlewares = [];
 		$close = new \ReflectionFunction($closure);
-		if (!empty($close->getClosureThis())) {
+		if (!empty($close->getClosureThis()) && env('environmental_workerId') == 0) {
 			$this->logger->warning('[' . $route . '] Static functions are recommended as callback functions.');
 		}
 		$middleware = array_column($this->groupTack, 'middleware');
