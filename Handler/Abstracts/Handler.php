@@ -52,7 +52,7 @@ abstract class Handler implements RequestHandlerInterface
 			return $this->dispatcher($request);
 		}
 
-		var_dump($request->getUri()->getPath());
+		var_dump($request->getUri()->getPath(), $request->getMethod());
 
 		$middleware = Kiri::getDi()->get($this->handler->middlewares[$this->offset]);
 		if (!($middleware instanceof MiddlewareInterface)) {
