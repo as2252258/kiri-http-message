@@ -20,6 +20,9 @@ class Waite
 
 	public function yield(): void
 	{
+		if (!$this->waite) {
+			return;
+		}
 		while (true) {
 			if (!$this->waite) {
 				break;
