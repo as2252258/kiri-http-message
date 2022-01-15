@@ -16,6 +16,7 @@ use Kiri\Message\Constrict\ResponseInterface;
 use Kiri\Message\Handler\DataGrip;
 use Kiri\Message\Handler\Dispatcher;
 use Kiri\Message\Handler\RouterCollector;
+use Kiri\Server\Events\OnAfterWorkerStart;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -40,6 +41,8 @@ class Server extends AbstractServer implements OnRequestInterface
 	public ExceptionHandlerInterface $exception;
 
 
+	public Waite $waite;
+
 	/**
 	 * @throws ConfigException
 	 * @throws ContainerExceptionInterface
@@ -54,7 +57,22 @@ class Server extends AbstractServer implements OnRequestInterface
 		$this->exception = $this->container->get($exception);
 		$this->responseEmitter = $this->container->get(ResponseEmitter::class);
 
+		$this->waite = $this->container->get(Waite::class);
+
+
+		$this->eventProvider->on(OnAfterWorkerStart::class, [$this, 'stopWaite']);
+
 		$this->router = $this->container->get(DataGrip::class)->get('http');
+	}
+
+
+	/**
+	 * @param OnAfterWorkerStart $afterWorkerStart
+	 * @return void
+	 */
+	public function stopWaite(OnAfterWorkerStart $afterWorkerStart)
+	{
+		$this->waite->setWaite(false);
 	}
 
 
@@ -66,6 +84,8 @@ class Server extends AbstractServer implements OnRequestInterface
 	public function onRequest(Request $request, Response $response): void
 	{
 		try {
+			$this->waite->yield();
+
 			[$PsrRequest, $PsrResponse] = $this->initRequestResponse($request);
 			$handler = $this->router->find($request->server['request_uri'], $request->getMethod());
 			if (is_integer($handler)) {
