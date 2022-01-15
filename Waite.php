@@ -18,13 +18,16 @@ class Waite
 	}
 
 
+	/**
+	 * @return void
+	 */
 	public function yield(): void
 	{
-		if (!$this->waite) {
+		if ($this->waite === false) {
 			return;
 		}
 		while (true) {
-			if (!$this->waite) {
+			if ($this->waite === true) {
 				break;
 			}
 		}
