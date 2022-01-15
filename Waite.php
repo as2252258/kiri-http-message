@@ -27,7 +27,7 @@ class Waite
 			return;
 		}
 		while (true) {
-			if ($this->waite === true) {
+			if ($this->waite === false) {
 				break;
 			}
 		}
