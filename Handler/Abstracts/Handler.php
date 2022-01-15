@@ -4,12 +4,12 @@ namespace Kiri\Message\Handler\Abstracts;
 
 
 use Exception;
+use Kiri;
+use Kiri\Annotation\Inject;
+use Kiri\Core\Help;
 use Kiri\Message\Constrict\ResponseInterface as HttpResponseInterface;
 use Kiri\Message\Handler\Handler as CHl;
 use Kiri\Message\ServerRequest;
-use Kiri\Core\Help;
-use Kiri;
-use Kiri\Annotation\Inject;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
@@ -70,10 +70,10 @@ abstract class Handler implements RequestHandlerInterface
 	 */
 	public function dispatcher(ServerRequestInterface $request): mixed
 	{
-//		if ($this->response->getBody()->getSize() > 0) {
-//			return $this->response;
-//		}
 		$response = call_user_func($this->handler->callback, ...$this->handler->params);
+		if (is_null($response) && $this->response->getBody()->getSize() > 0) {
+			return $this->response;
+		}
 		if (!($response instanceof ResponseInterface)) {
 			$response = $this->transferToResponse($response);
 		}
