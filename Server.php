@@ -57,6 +57,8 @@ class Server extends AbstractServer implements OnRequestInterface
 		$this->exception = $this->container->get($exception);
 		$this->responseEmitter = $this->container->get(ResponseEmitter::class);
 
+		$this->eventProvider->on(OnAfterWorkerStart::class, [$this, 'stopWaite']);
+
 		$this->waite = $this->container->get(Waite::class);
 
 		$this->router = $this->container->get(DataGrip::class)->get('http');
@@ -81,7 +83,7 @@ class Server extends AbstractServer implements OnRequestInterface
 	public function onRequest(Request $request, Response $response): void
 	{
 		try {
-//			$this->waite->yield();
+			$this->waite->yield();
 
 			[$PsrRequest, $PsrResponse] = $this->initRequestResponse($request);
 			$handler = $this->router->find($request->server['request_uri'], $request->getMethod());
