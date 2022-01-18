@@ -81,7 +81,7 @@ class Server extends AbstractServer implements OnRequestInterface
 	public function onRequest(Request $request, Response $response): void
 	{
 		try {
-			$this->waite->yield();
+//			$this->waite->yield();
 
 			[$PsrRequest, $PsrResponse] = $this->initRequestResponse($request);
 			$handler = $this->router->find($request->server['request_uri'], $request->getMethod());
