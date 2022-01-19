@@ -26,10 +26,8 @@ class Waite
 		if ($this->waite === false) {
 			return;
 		}
-		while (true) {
-			if ($this->waite === false) {
-				break;
-			}
+		while ($this->waite == true) {
+			usleep(10 * 1000);
 		}
 	}
 
