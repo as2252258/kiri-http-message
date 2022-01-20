@@ -8,7 +8,6 @@ use Kiri\Abstracts\AbstractServer;
 use Kiri\Abstracts\Config;
 use Kiri\Context;
 use Kiri\Exception\ConfigException;
-use Kiri\Message\Abstracts\EventDispatchHelper;
 use Kiri\Message\Abstracts\ExceptionHandlerInterface;
 use Kiri\Message\Abstracts\ResponseHelper;
 use Kiri\Message\Constrict\RequestInterface;
@@ -29,7 +28,6 @@ use Swoole\Http\Response;
 class Server extends AbstractServer implements OnRequestInterface
 {
 
-	use EventDispatchHelper;
 	use ResponseHelper;
 
 	public RouterCollector $router;
@@ -54,14 +52,14 @@ class Server extends AbstractServer implements OnRequestInterface
 		if (!in_array(ExceptionHandlerInterface::class, class_implements($exception))) {
 			$exception = ExceptionHandlerDispatcher::class;
 		}
-		$this->exception = $this->container->get($exception);
-		$this->responseEmitter = $this->container->get(ResponseEmitter::class);
+		$this->exception = $this->getContainer()->get($exception);
+		$this->responseEmitter = $this->getContainer()->get(ResponseEmitter::class);
 
-		$this->eventProvider->on(OnAfterWorkerStart::class, [$this, 'stopWaite']);
+		$this->getEventProvider()->on(OnAfterWorkerStart::class, [$this, 'stopWaite']);
 
-		$this->waite = $this->container->get(Waite::class);
+		$this->waite = $this->getContainer()->get(Waite::class);
 
-		$this->router = $this->container->get(DataGrip::class)->get('http');
+		$this->router = $this->getContainer()->get(DataGrip::class)->get('http');
 	}
 
 
@@ -96,7 +94,7 @@ class Server extends AbstractServer implements OnRequestInterface
 			}
 		} catch (\Throwable $throwable) {
 			$this->logger()->error(error_trigger_format($throwable));
-			$PsrResponse = $this->exception->emit($throwable, $this->response);
+			$PsrResponse = $this->exception->emit($throwable, di(Constrict\Response::class));
 		} finally {
 			if ($request->server['request_method'] == 'HEAD') {
 				$PsrResponse->getBody()->write('');
