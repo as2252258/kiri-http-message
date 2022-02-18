@@ -200,10 +200,7 @@ class Router
 	private function resolve_file($files)
 	{
 		try {
-			if (function_exists('opcache_invalidate')) {
-				opcache_invalidate($files, true);
-			}
-			include_once "$files";
+			include "$files";
 		} catch (\Throwable $throwable) {
 			var_dump($throwable->getMessage());
 		}
