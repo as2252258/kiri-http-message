@@ -114,9 +114,7 @@ class Server extends AbstractServer implements OnRequestInterface
 
 		/** @var ServerRequest $PsrRequest */
 		$PsrRequest = Context::setContext(RequestInterface::class, ServerRequest::createServerRequest($request));
-		if ($PsrRequest->isMethod('OPTIONS')) {
-			$request->server['request_uri'] = '/*';
-		}
+
 		return [$PsrRequest, $PsrResponse];
 	}
 
