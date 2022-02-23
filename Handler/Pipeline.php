@@ -2,14 +2,12 @@
 
 namespace Kiri\Message\Handler;
 
-use Kiri\Annotation\Aspect;
 use Closure;
-use Exception;
-use Psr\Http\Server\MiddlewareInterface;
-use Kiri\Di\NoteManager;
-use Kiri\IAspect;
 use Kiri;
-use ReflectionException;
+use Kiri\Annotation\Aspect;
+use Kiri\Di\TargetManager;
+use Kiri\IAspect;
+use Psr\Http\Server\MiddlewareInterface;
 use Throwable;
 
 class Pipeline
@@ -105,12 +103,15 @@ class Pipeline
 	 * @param $destination
 	 * @param $parameters
 	 * @return Closure|array
-     */
+	 */
 	private function aspect_caller($destination, $parameters): Closure|array
 	{
 		[$controller, $action] = $destination;
-		/** @var Aspect $aop */
-		$aop = NoteManager::getSpecify_annotation(Aspect::class, $controller::class, $action);
+
+
+		/** @var null|Aspect $aop */
+		$aop = TargetManager::get($controller::class)->getSpecify_annotation($action, Aspect::class);
+
 		if (!empty($aop)) {
 			$aop = Kiri::getDi()->get($aop->aspect);
 			$destination = static function () use ($aop, $destination, $parameters) {

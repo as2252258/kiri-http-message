@@ -5,9 +5,9 @@ namespace Kiri\Message\Interceptor;
 
 use Kiri\Events\EventProvider;
 use Kiri;
-use Kiri\Annotation\Attribute;
+use Kiri\Annotation\AbstractAttribute;
 
-#[\Attribute(\Attribute::TARGET_METHOD)] class Interceptor extends Attribute
+#[\Attribute(\Attribute::TARGET_METHOD)] class Interceptor extends AbstractAttribute
 {
 
 

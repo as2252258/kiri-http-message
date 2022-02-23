@@ -16,18 +16,6 @@ use Kiri;
 abstract class HttpService extends Component
 {
 
-
-	/**
-	 * @param $message
-	 * @param string $category
-	 * @throws Exception
-	 */
-	protected function write($message, string $category = 'app')
-	{
-		$logger = Kiri::app()->getLogger();
-		$logger->write($message, $category);
-	}
-
 	/**
 	 * @param $name
 	 * @return mixed

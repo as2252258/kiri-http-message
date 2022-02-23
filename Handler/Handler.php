@@ -3,12 +3,12 @@
 namespace Kiri\Message\Handler;
 
 use Closure;
+use Kiri;
+use Kiri\Annotation\Aspect;
+use Kiri\Di\TargetManager;
 use Kiri\Message\Aspect\JoinPoint;
 use Kiri\Message\Aspect\OnAspectInterface;
 use Kiri\Message\Handler\Abstracts\MiddlewareManager;
-use Kiri\Di\NoteManager;
-use Kiri;
-use Kiri\Annotation\Aspect;
 use ReflectionException;
 
 class Handler
@@ -46,7 +46,8 @@ class Handler
 		}
 		$this->middlewares = MiddlewareManager::get($callback);
 
-		$aspect = NoteManager::getSpecify_annotation(Aspect::class, $callback[0], $callback[1]);
+		$aspect = TargetManager::get($callback[0])->getSpecify_annotation($callback[1], Aspect::class);
+
 		$callback[0] = Kiri::getDi()->get($callback[0]);
 		if (!is_null($aspect)) {
 			$this->recover($aspect, $callback);
