@@ -50,6 +50,9 @@ class Handler
 		}
 
 		$aspect = TargetManager::get($callback[0])->getSpecify_annotation($callback[1], Aspect::class);
+		if (is_array($aspect)) {
+			$aspect = current($aspect);
+		}
 
 		$callback[0] = Kiri::getDi()->get($callback[0]);
 		if (!is_null($aspect)) {
