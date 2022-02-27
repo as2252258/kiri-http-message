@@ -45,6 +45,9 @@ class Handler
 			return;
 		}
 		$this->middlewares = MiddlewareManager::get($callback);
+		if (str_contains($route, 'oauth')) {
+			var_dump($this->middlewares);
+		}
 
 		$aspect = TargetManager::get($callback[0])->getSpecify_annotation($callback[1], Aspect::class);
 
