@@ -35,6 +35,8 @@ class CoreMiddleware extends Middleware
 		$this->response->withAccessControlAllowOrigin('*')->withAccessControlRequestMethod($requestMethod)
 			->withAccessControlAllowHeaders($allowHeaders);
 
+		var_dump($request->getUri()->getPath());
+
 		return $handler->handle($request);
 	}
 
