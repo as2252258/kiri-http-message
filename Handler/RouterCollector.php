@@ -165,7 +165,7 @@ class RouterCollector implements \ArrayAccess, \IteratorAggregate
 	public function find(string $path, string $method): Handler|int|null
 	{
 		if (!isset($this->_item[$path])) {
-			return 404;
+			return $method == 'OPTIONS' ? ($this->_item['*'][$method] ?? 404) : 404;
 		}
 		$handler = $this->_item[$path][$method] ?? null;
 		if (is_null($handler)) {
