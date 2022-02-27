@@ -200,7 +200,7 @@ class RouterCollector implements \ArrayAccess, \IteratorAggregate
 	{
 		$handler = $this->_item[$path][$method] ?? null;
 		if (is_null($handler)) {
-			var_dump($this->_item['*']);
+			var_dump($this->_item);
 			return $this->_item['*'][$method] ?? 405;
 		}
 		return 405;
