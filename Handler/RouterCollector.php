@@ -199,6 +199,9 @@ class RouterCollector implements \ArrayAccess, \IteratorAggregate
 	public function options($path, $method): mixed
 	{
 		$handler = $this->_item[$path][$method] ?? null;
+
+		var_dump($handler);
+
 		if (is_null($handler)) {
 			return $this->_item['*'][$method] ?? 405;
 		}
