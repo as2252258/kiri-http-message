@@ -48,8 +48,8 @@ class Handler
 		$this->middlewares = MiddlewareManager::get($callback);
 
 		$aspect = TargetManager::get($callback[0])->getSpecify_annotation($callback[1], Aspect::class);
-		if (is_array($aspect)) {
-			$aspect = current($aspect);
+		if (!empty($aspect) && is_array($aspect)) {
+			$aspect = current($aspect)->newInstance();
 		}
 
 		$callback[0] = Kiri::getDi()->get($callback[0]);
