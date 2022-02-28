@@ -27,6 +27,7 @@ class Handler
 	public ?array $middlewares = [];
 
 
+
 	/**
 	 * @param string $route
 	 * @param array|Closure $callback
