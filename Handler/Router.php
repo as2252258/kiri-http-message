@@ -4,6 +4,7 @@ namespace Kiri\Message\Handler;
 
 use Closure;
 use Exception;
+use Kiri\Annotation\Route\RequestMethod;
 use Kiri;
 
 
@@ -56,7 +57,7 @@ class Router
 	public static function post(string $route, string|Closure $handler): void
 	{
 		$router = Kiri::getDi()->get(DataGrip::class)->get(static::$type);
-		$router->addRoute(['POST'], $route, $handler);
+		$router->addRoute([RequestMethod::REQUEST_POST], $route, $handler);
 	}
 
 	/**
@@ -67,7 +68,7 @@ class Router
 	public static function get(string $route, string|Closure $handler): void
 	{
 		$router = Kiri::getDi()->get(DataGrip::class)->get(static::$type);
-		$router->addRoute(['GET'], $route, $handler);
+		$router->addRoute([RequestMethod::REQUEST_GET], $route, $handler);
 	}
 
 
@@ -79,7 +80,7 @@ class Router
 	public static function options(string $route, string|Closure $handler): void
 	{
 		$router = Kiri::getDi()->get(DataGrip::class)->get(static::$type);
-		$router->addRoute(['OPTIONS'], $route, $handler);
+		$router->addRoute([RequestMethod::REQUEST_OPTIONS], $route, $handler);
 	}
 
 
@@ -102,7 +103,7 @@ class Router
 	public static function delete(string $route, string|Closure $handler): void
 	{
 		$router = Kiri::getDi()->get(DataGrip::class)->get(static::$type);
-		$router->addRoute(['DELETE'], $route, $handler);
+		$router->addRoute([RequestMethod::REQUEST_DELETE], $route, $handler);
 	}
 
 
@@ -114,7 +115,7 @@ class Router
 	public static function head(string $route, string|Closure $handler): void
 	{
 		$router = Kiri::getDi()->get(DataGrip::class)->get(static::$type);
-		$router->addRoute(['HEAD'], $route, $handler);
+		$router->addRoute([RequestMethod::REQUEST_HEAD], $route, $handler);
 	}
 
 
@@ -126,20 +127,20 @@ class Router
 	public static function put(string $route, string|Closure $handler): void
 	{
 		$router = Kiri::getDi()->get(DataGrip::class)->get(static::$type);
-		$router->addRoute(['PUT'], $route, $handler);
+		$router->addRoute([RequestMethod::REQUEST_PUT], $route, $handler);
 	}
 
 
 	/**
-	 * @param array|string $methods
+	 * @param array|RequestMethod $methods
 	 * @param string $route
 	 * @param string|Closure $handler
 	 * @throws
 	 */
-	public static function addRoute(array|string $methods, string $route, string|Closure $handler): void
+	public static function addRoute(array|RequestMethod $methods, string $route, string|Closure $handler): void
 	{
 		$router = Kiri::getDi()->get(DataGrip::class)->get(static::$type);
-		if (is_string($methods)) {
+		if ($methods instanceof RequestMethod) {
 			$methods = [$methods];
 		}
 		$router->addRoute($methods, $route, $handler);

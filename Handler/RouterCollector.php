@@ -13,6 +13,7 @@ use Psr\Log\LoggerInterface;
 use ReflectionException;
 use Throwable;
 use Traversable;
+use Kiri\Annotation\Route\RequestMethod;
 
 /**
  *
@@ -44,7 +45,7 @@ class RouterCollector implements \ArrayAccess, \IteratorAggregate
 
 
 	/**
-	 * @param array $method
+	 * @param RequestMethod[] $method
 	 * @param string $route
 	 * @param string|Closure|array $closure
 	 * @throws
@@ -59,7 +60,7 @@ class RouterCollector implements \ArrayAccess, \IteratorAggregate
 				$this->_route_analysis($closure);
 			}
 			foreach ($method as $value) {
-				$this->_item[$route][$value] = new Handler($route, $closure, $middlewares ?? []);
+				$this->_item[$route][$value->getString()] = new Handler($route, $closure, $middlewares ?? []);
 			}
 		} catch (Throwable $throwable) {
 			$this->logger->error($throwable->getMessage(), [error_trigger_format($throwable)]);
