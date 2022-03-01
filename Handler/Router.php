@@ -4,8 +4,8 @@ namespace Kiri\Message\Handler;
 
 use Closure;
 use Exception;
-use Kiri\Annotation\Route\RequestMethod;
 use Kiri;
+use Kiri\Annotation\Route\RequestMethod;
 
 
 const ROUTER_DEFAULT_TYPE = 'http';
@@ -17,7 +17,14 @@ class Router
 	/**
 	 * @var array|string[]
 	 */
-	const METHODS = ['GET', 'POST', 'HEAD', 'OPTIONS', 'PUT', 'DELETE'];
+	const METHODS = [
+		RequestMethod::REQUEST_GET,
+		RequestMethod::REQUEST_POST,
+		RequestMethod::REQUEST_HEAD,
+		RequestMethod::REQUEST_OPTIONS,
+		RequestMethod::REQUEST_PUT,
+		RequestMethod::REQUEST_DELETE
+	];
 
 
 	/**
