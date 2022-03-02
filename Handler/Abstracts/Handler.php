@@ -9,7 +9,6 @@ use Kiri\Annotation\Inject;
 use Kiri\Core\Help;
 use Kiri\Message\Constrict\ResponseInterface as HttpResponseInterface;
 use Kiri\Message\Handler\Handler as CHl;
-use Kiri\Message\ServerRequest;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
@@ -49,7 +48,7 @@ abstract class Handler implements RequestHandlerInterface
 	protected function execute(ServerRequestInterface $request): ResponseInterface
 	{
 		if (empty($this->handler->middlewares) || !isset($this->handler->middlewares[$this->offset])) {
-			return $this->dispatcher($request);
+			return $this->dispatcher($this->handler);
 		}
 
 		$middleware = Kiri::getDi()->get($this->handler->middlewares[$this->offset]);
@@ -64,37 +63,22 @@ abstract class Handler implements RequestHandlerInterface
 
 
 	/**
-	 * @param ServerRequestInterface $request
+	 * @param CHl $handler
 	 * @return mixed
-	 * @throws Exception
 	 */
-	public function dispatcher(ServerRequestInterface $request): mixed
+	public function dispatcher(CHl $handler): mixed
 	{
-		$response = call_user_func($this->handler->callback, ...$this->handler->params);
+		$response = call_user_func($handler->callback, ...$handler->params);
+		if (!$this->response->hasContentType()) {
+			$this->response->withContentType('application/json;charset=utf-8');
+		}
 		if (is_null($response) && $this->response->getBody()->getSize() > 0) {
 			return $this->response;
 		}
 		if (!($response instanceof ResponseInterface)) {
 			$response = $this->transferToResponse($response);
 		}
-		$response->withHeader('Run-Time', $this->_runTime($request));
 		return $response;
-	}
-
-
-	/**
-	 * @param ServerRequest $request
-	 * @return float
-	 */
-	private function _runTime(ServerRequestInterface $request): float
-	{
-		$float = microtime(true) - time();
-
-		$serverParams = $request->getServerParams();
-
-		$rTime = $serverParams['request_time_float'] - $serverParams['request_time'];
-
-		return round($float - $rTime, 6);
 	}
 
 
@@ -105,18 +89,13 @@ abstract class Handler implements RequestHandlerInterface
 	private function transferToResponse(mixed $responseData): ResponseInterface
 	{
 		$interface = $this->response->withStatus(200);
-		if (!$interface->hasContentType()) {
-			$interface->withContentType('application/json;charset=utf-8');
-		}
+		$body = $interface->getBody();
 		if (str_contains($interface->getContentType(), 'xml')) {
-			if (is_object($responseData)) {
-				$responseData = get_object_vars($responseData);
-			}
-			$interface->getBody()->write(Help::toXml($responseData));
+			$body->write(Help::toXml($responseData));
 		} else if (is_array($responseData)) {
-			$interface->getBody()->write(json_encode($responseData));
+			$body->write(json_encode($responseData));
 		} else {
-			$interface->getBody()->write((string)$responseData);
+			$body->write((string)$responseData);
 		}
 		return $interface;
 	}

@@ -39,6 +39,9 @@ class Server extends AbstractServer implements OnRequestInterface
 	public ExceptionHandlerInterface $exception;
 
 
+	public Dispatcher $dispatcher;
+
+
 	public Waite $waite;
 
 	/**
@@ -56,6 +59,8 @@ class Server extends AbstractServer implements OnRequestInterface
 		$this->responseEmitter = $this->getContainer()->get(ResponseEmitter::class);
 
 		$this->waite = $this->getContainer()->get(Waite::class);
+
+		$this->dispatcher = $this->getContainer()->get(Dispatcher::class);
 
 		$this->router = $this->getContainer()->get(DataGrip::class)->get('http');
 	}
@@ -76,7 +81,7 @@ class Server extends AbstractServer implements OnRequestInterface
 			} else if (is_null($handler)) {
 				$this->fail($PsrResponse, 'Page not found.', 404);
 			} else {
-				$PsrResponse = $this->getContainer()->get(Dispatcher::class)->with($handler)->handle($PsrRequest);
+				$PsrResponse = $this->dispatcher->with($handler)->handle($PsrRequest);
 			}
 		} catch (\Throwable $throwable) {
 			$this->logger->error(error_trigger_format($throwable));
