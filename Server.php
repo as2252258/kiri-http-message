@@ -70,7 +70,7 @@ class Server extends AbstractServer implements OnRequestInterface
 		if (!in_array(ExceptionHandlerInterface::class, class_implements($exception))) {
 			$exception = ExceptionHandlerDispatcher::class;
 		}
-		$this->exception = $this->getContainer()->get($exception);
+		$this->exception = $this->container->get($exception);
 
 		$this->router = $this->dataGrip->get('http');
 	}
