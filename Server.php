@@ -15,8 +15,8 @@ use Kiri\Message\Constrict\ResponseInterface;
 use Kiri\Message\Handler\DataGrip;
 use Kiri\Message\Handler\Dispatcher;
 use Kiri\Message\Handler\RouterCollector;
-use Kiri\Server\Events\OnAfterWorkerStart;
 use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\ContainerInterface;
 use Psr\Container\NotFoundExceptionInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Swoole\Http\Request;
@@ -39,10 +39,16 @@ class Server extends AbstractServer implements OnRequestInterface
 	public ExceptionHandlerInterface $exception;
 
 
-	public Dispatcher $dispatcher;
-
-
-	public Waite $waite;
+	public function __construct(
+		public Emitter            $responseEmitter,
+		public ContainerInterface $container,
+		public Waite              $waite,
+		public Dispatcher         $dispatcher,
+		public DataGrip           $dataGrip,
+		array                     $config = [])
+	{
+		parent::__construct($config);
+	}
 
 	/**
 	 * @throws ConfigException
@@ -56,13 +62,8 @@ class Server extends AbstractServer implements OnRequestInterface
 			$exception = ExceptionHandlerDispatcher::class;
 		}
 		$this->exception = $this->getContainer()->get($exception);
-		$this->responseEmitter = $this->getContainer()->get(ResponseEmitter::class);
 
-		$this->waite = $this->getContainer()->get(Waite::class);
-
-		$this->dispatcher = $this->getContainer()->get(Dispatcher::class);
-
-		$this->router = $this->getContainer()->get(DataGrip::class)->get('http');
+		$this->router = $this->dataGrip->get('http');
 	}
 
 
