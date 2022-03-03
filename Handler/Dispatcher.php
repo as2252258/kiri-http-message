@@ -3,15 +3,14 @@
 namespace Kiri\Message\Handler;
 
 use Exception;
-use Kiri\Core\Help;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-
+use Kiri\Message\Handler\Abstracts\Handler;
 
 /**
  *
  */
-class Dispatcher extends \Kiri\Message\Handler\Abstracts\Handler
+class Dispatcher extends Handler
 {
 
 
