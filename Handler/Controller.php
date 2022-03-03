@@ -14,7 +14,7 @@ use Psr\Log\LoggerInterface;
  * Class WebController
  * @package Kiri\Web
  */
-class Controller
+abstract class Controller
 {
 
 
@@ -25,8 +25,10 @@ class Controller
 	 * @param ContainerInterface $container
 	 */
 	public function __construct(
-		public RequestInterface $request, public ResponseInterface $response,
-		public LoggerInterface  $logger, public ContainerInterface $container)
+		public RequestInterface   $request,
+		public ResponseInterface  $response,
+		public LoggerInterface    $logger,
+		public ContainerInterface $container)
 	{
 	}
 
