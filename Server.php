@@ -39,6 +39,15 @@ class Server extends AbstractServer implements OnRequestInterface
 	public ExceptionHandlerInterface $exception;
 
 
+	/**
+	 * @param Emitter $responseEmitter
+	 * @param ContainerInterface $container
+	 * @param Waite $waite
+	 * @param Dispatcher $dispatcher
+	 * @param DataGrip $dataGrip
+	 * @param array $config
+	 * @throws Exception
+	 */
 	public function __construct(
 		public Emitter            $responseEmitter,
 		public ContainerInterface $container,
