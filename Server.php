@@ -47,6 +47,7 @@ class Server extends AbstractServer implements OnRequestInterface
      * @param ContainerInterface $container
      * @param Waite $waite
      * @param Dispatcher $dispatcher
+     * @param EventProvider $provider
      * @param DataGrip $dataGrip
      * @param array $config
      * @throws Exception
