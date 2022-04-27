@@ -3,8 +3,6 @@
 namespace Kiri\Message;
 
 
-use Kiri\Message\ContentType;
-use Kiri\Message\Stream;
 use Kiri\Message\Constrict\Response;
 use Kiri\Message\Constrict\ResponseInterface;
 use Kiri\Message\Abstracts\ExceptionHandlerInterface;
