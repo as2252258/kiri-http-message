@@ -25,7 +25,7 @@ class ExceptionHandlerDispatcher implements ExceptionHandlerInterface
 	 */
 	public function emit(Throwable $exception, Response $response): ResponseInterface
 	{
-		$response->withContentType(ContentType::HTML)->withCharset('utf-8');
+		$response->withContentType(ContentType::HTML);
 		if ($exception->getCode() == 404) {
 			return $response->withBody(new Stream($exception->getMessage()))
 				->withStatus(404);
