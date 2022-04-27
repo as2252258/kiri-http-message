@@ -97,6 +97,9 @@ abstract class Handler implements RequestHandlerInterface
     private function transferToResponse(mixed $responseData, $format): ResponseInterface
     {
         $interface = $this->response->withStatus(200);
+        if ($format instanceof Kiri\Message\ContentType) {
+            $format = $format->toString();
+        }
         if (str_contains($format, 'xml')) {
             return $interface->withContent(Help::toXml($responseData));
         } else if (is_string($responseData)) {
