@@ -142,7 +142,7 @@ class Server extends AbstractServer implements OnRequestInterface
      * @param $code
      * @return void
      */
-    private function fail($PsrResponse, $message, $code)
+    private function fail($PsrResponse, $message, $code): void
     {
         $PsrResponse->getBody()->write($message);
         $PsrResponse->withStatus($code);
