@@ -17,7 +17,6 @@ use Kiri\Abstracts\Config;
 use Kiri\Core\Json;
 
 
-
 abstract class Handler implements RequestHandlerInterface
 {
 
@@ -68,6 +67,7 @@ abstract class Handler implements RequestHandlerInterface
     /**
      * @param CHl $handler
      * @return mixed
+     * @throws Kiri\Exception\ConfigException
      */
     public function dispatcher(CHl $handler): mixed
     {
@@ -93,10 +93,10 @@ abstract class Handler implements RequestHandlerInterface
     private function transferToResponse(mixed $responseData, $format): ResponseInterface
     {
         $interface = $this->response->withStatus(200);
-        if (is_string($responseData)) {
-            return $interface->withContent($responseData);
-        } else if (str_contains($format, 'xml')) {
+        if (str_contains($format, 'xml')) {
             return $interface->withContent(Help::toXml($responseData));
+        } else if (is_string($responseData)) {
+            return $interface->withContent($responseData);
         } else {
             return $interface->withContent(Json::encode($responseData));
         }
