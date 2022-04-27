@@ -73,9 +73,11 @@ abstract class Handler implements RequestHandlerInterface
     {
         $response = call_user_func($handler->callback, ...$handler->params);
 
-        $format = Config::get('response.format', Kiri\Message\ContentType::JSON);
         if (!$this->response->hasContentType()) {
+            $format = Config::get('response.format', Kiri\Message\ContentType::JSON);
             $this->response->withContentType($format);
+        } else {
+            $format = $this->response->getContentType();
         }
         if (is_null($response) && $this->response->getBody()->getSize() > 0) {
             return $this->response;
