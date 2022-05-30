@@ -49,11 +49,16 @@ abstract class Handler implements RequestHandlerInterface
      */
     protected function execute(ServerRequestInterface $request): ResponseInterface
     {
-        if (empty($this->handler->middlewares) || !isset($this->handler->middlewares[$this->offset])) {
+        if (empty($this->handler->middlewares)) {
             return $this->dispatcher($this->handler);
         }
 
-        $middleware = Kiri::getDi()->get($this->handler->middlewares[$this->offset]);
+        $middleware = $this->handler->middlewares[$this->offset] ?? null;
+        if (is_null($middleware)) {
+            return $this->dispatcher($this->handler);
+        }
+
+        $middleware = Kiri::getDi()->get($middleware);
         if (!($middleware instanceof MiddlewareInterface)) {
             throw new Exception('get_implements_class($middleware) not found method process.');
         }
