@@ -7,7 +7,7 @@ namespace Kiri\Message\Handler;
 use Kiri;
 use Kiri\Message\Constrict\RequestInterface;
 use Kiri\Message\Constrict\ResponseInterface;
-use Psr\Container\ContainerInterface;
+use Kiri\Di\ContainerInterface;
 use Psr\Log\LoggerInterface;
 
 /**

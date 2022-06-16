@@ -27,7 +27,6 @@ class Handler
 	public ?array $middlewares = [];
 
 
-
 	/**
 	 * @param string $route
 	 * @param array|Closure $callback
@@ -41,17 +40,26 @@ class Handler
 		if (!empty($middlewares)) {
 			$this->middlewares = $middlewares;
 		}
-		if ($callback instanceof Closure || count($callback) == 1) {
+		if ($callback instanceof Closure || !is_callable($callback, true)) {
 			$this->callback = $callback;
 			return;
 		}
 		$this->middlewares = MiddlewareManager::get($callback);
+		$this->setAspect($callback);
+	}
 
-		$aspect = TargetManager::get($callback[0])->getSpecify_annotation($callback[1], Aspect::class);
+
+	/**
+	 * @param $callback
+	 * @return void
+	 * @throws ReflectionException
+	 */
+	private function setAspect($callback): void
+	{
+		$aspect = TargetManager::get($callback[0])->searchNote($callback[1], Aspect::class);
 		if (!empty($aspect) && is_array($aspect)) {
 			$aspect = current($aspect)->newInstance();
 		}
-
 		$callback[0] = Kiri::getDi()->get($callback[0]);
 		if (!is_null($aspect)) {
 			$this->recover($aspect, $callback);
@@ -65,7 +73,7 @@ class Handler
 	 * @param Aspect $aspect
 	 * @param $callback
 	 */
-	public function recover(Aspect $aspect, $callback)
+	public function recover(Aspect $aspect, $callback): void
 	{
 		$aspect = Kiri::getDi()->get($aspect->aspect);
 		if ($aspect instanceof OnAspectInterface) {
@@ -87,9 +95,9 @@ class Handler
 			if (!isset($callback[1])) {
 				return [];
 			}
-			return $container->getMethodParameters($callback[0], $callback[1]);
+			return $container->getArgs($callback[0], $callback[1]);
 		} else {
-			return $container->getFunctionParameters($callback);
+			return $container->getArgs($callback);
 		}
 	}
 }

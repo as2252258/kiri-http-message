@@ -4,6 +4,7 @@ namespace Kiri\Message;
 
 
 use Exception;
+use Kiri;
 use Kiri\Abstracts\AbstractServer;
 use Kiri\Abstracts\Config;
 use Kiri\Context;
@@ -19,7 +20,7 @@ use Kiri\Message\Handler\RouterCollector;
 use Kiri\Server\Events\OnAfterWorkerStart;
 use Kiri\Server\Events\OnBeforeWorkerStart;
 use Psr\Container\ContainerExceptionInterface;
-use Psr\Container\ContainerInterface;
+use Kiri\Di\ContainerInterface;
 use Psr\Container\NotFoundExceptionInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Swoole\Http\Request;
@@ -32,137 +33,128 @@ use Swoole\Http\Response;
 class Server extends AbstractServer implements OnRequestInterface
 {
 
-    use ResponseHelper;
+	use ResponseHelper;
 
-    public RouterCollector $router;
-
-
-    /**
-     * @var ExceptionHandlerInterface
-     */
-    public ExceptionHandlerInterface $exception;
+	public RouterCollector $router;
 
 
-    /**
-     * @param Emitter $responseEmitter
-     * @param ContainerInterface $container
-     * @param Waite $waite
-     * @param Dispatcher $dispatcher
-     * @param EventProvider $provider
-     * @param DataGrip $dataGrip
-     * @param array $config
-     * @throws Exception
-     */
-    public function __construct(
-        public Emitter            $responseEmitter,
-        public ContainerInterface $container,
-        public Waite              $waite,
-        public Dispatcher         $dispatcher,
-        public EventProvider      $provider,
-        public DataGrip           $dataGrip,
-        array                     $config = [])
-    {
-        parent::__construct($config);
-    }
+	/**
+	 * @var ExceptionHandlerInterface
+	 */
+	public ExceptionHandlerInterface $exception;
 
 
-
-    /**
-     * @throws ConfigException
-     * @throws ContainerExceptionInterface
-     * @throws NotFoundExceptionInterface
-     */
-    public function init()
-    {
-        $exception = Config::get('exception.http', ExceptionHandlerDispatcher::class);
-        if (!in_array(ExceptionHandlerInterface::class, class_implements($exception))) {
-            $exception = ExceptionHandlerDispatcher::class;
-        }
-        $this->exception = $this->container->get($exception);
-
-        $this->provider->on(OnBeforeWorkerStart::class, [$this, 'onStartWaite']);
-        $this->provider->on(OnAfterWorkerStart::class, [$this, 'onEndWaite']);
-
-        $this->router = $this->dataGrip->get('http');
-    }
+	private ContentType $contentType;
 
 
-    /**
-     * @return void
-     */
-    public function onStartWaite(): void
-    {
-        $this->waite->setWaite(true);
-    }
+	/**
+	 * @param Emitter $emitter
+	 * @param ContainerInterface $container
+	 * @param Dispatcher $dispatcher
+	 * @param EventProvider $provider
+	 * @param DataGrip $dataGrip
+	 * @param array $config
+	 * @throws Exception
+	 */
+	public function __construct(
+		public Emitter            $emitter,
+		public ContainerInterface $container,
+		public Dispatcher         $dispatcher,
+		public EventProvider      $provider,
+		public DataGrip           $dataGrip,
+		array                     $config = [])
+	{
+		parent::__construct($config);
+	}
 
 
-    /**
-     * @return void
-     */
-    public function onEndWaite(): void
-    {
-        $this->waite->setWaite(false);
-    }
+	/**
+	 * @throws ConfigException
+	 * @throws ContainerExceptionInterface
+	 * @throws NotFoundExceptionInterface
+	 */
+	public function init()
+	{
+		$this->container->mapping(Emitter::class, ResponseEmitter::class);
+		$this->container->mapping(ResponseInterface::class, Constrict\Response::class);
+		$this->container->mapping(RequestInterface::class, Constrict\Request::class);
+
+		$exception = Config::get('exception.http', ExceptionHandlerDispatcher::class);
+		if (!in_array(ExceptionHandlerInterface::class, class_implements($exception))) {
+			$exception = ExceptionHandlerDispatcher::class;
+		}
+		$this->exception = $this->container->get($exception);
+
+		$this->provider->on(OnBeforeWorkerStart::class, [$this, 'onStartWaite']);
+		$this->provider->on(OnAfterWorkerStart::class, [$this, 'onEndWaite']);
+
+		$this->contentType = Config::get('response.format', ContentType::JSON);
+		$this->router = $this->dataGrip->get('http');
+	}
 
 
-    /**
-     * @param Request $request
-     * @param Response $response
-     * @throws Exception
-     */
-    public function onRequest(Request $request, Response $response): void
-    {
-        try {
-            $this->waite->yield();
-
-            [$PsrRequest, $PsrResponse] = $this->initRequestResponse($request);
-            $handler = $this->router->find($request->server['request_uri'], $request->getMethod());
-            if (is_integer($handler)) {
-                $this->fail($PsrResponse, 'Allow Method[' . $request->getMethod() . '].', $handler);
-            } else if (is_null($handler)) {
-                $this->fail($PsrResponse, 'Page not found.', 404);
-            } else {
-                $PsrResponse = $this->dispatcher->with($handler)->handle($PsrRequest);
-            }
-        } catch (\Throwable $throwable) {
-            $this->logger->error(error_trigger_format($throwable));
-            $PsrResponse = $this->exception->emit($throwable, di(Constrict\Response::class));
-        } finally {
-            if ($request->server['request_method'] == 'HEAD') {
-                $PsrResponse->getBody()->write('');
-            }
-            $this->responseEmitter->sender($response, $PsrResponse);
-        }
-    }
+	/**
+	 * @return void
+	 */
+	public function onStartWaite(): void
+	{
+		CoordinatorManager::utility(Coordinator::WORKER_START)->status(true);
+	}
 
 
-    /**
-     * @param $PsrResponse
-     * @param $message
-     * @param $code
-     * @return void
-     */
-    private function fail($PsrResponse, $message, $code): void
-    {
-        $PsrResponse->getBody()->write($message);
-        $PsrResponse->withStatus($code);
-    }
+	/**
+	 * @return void
+	 */
+	public function onEndWaite(): void
+	{
+		CoordinatorManager::utility(Coordinator::WORKER_START)->status(false);
+	}
 
 
-    /**
-     * @param Request $request
-     * @return array<ServerRequestInterface, ResponseInterface>
-     * @throws Exception
-     */
-    private function initRequestResponse(Request $request): array
-    {
-        $PsrResponse = Context::setContext(ResponseInterface::class, new \Kiri\Message\Response());
+	/**
+	 * @param Request $request
+	 * @param Response $response
+	 * @throws Exception
+	 */
+	public function onRequest(Request $request, Response $response): void
+	{
+		try {
+			CoordinatorManager::utility(Coordinator::WORKER_START)->yield();
 
-        /** @var ServerRequest $PsrRequest */
-        $PsrRequest = Context::setContext(RequestInterface::class, ServerRequest::createServerRequest($request));
+			/** @var ServerRequest $PsrRequest */
+			[$PsrRequest, $PsrResponse] = $this->initRequestResponse($request);
+			$handler = $this->router->find($request->server['request_uri'], $request->getMethod());
 
-        return [$PsrRequest, $PsrResponse];
-    }
+			if (is_null($handler)) {
+				$PsrResponse->withStatus(404)->withContent('Page not found[' . $request->server['request_uri'] . '].');
+			} else if (is_integer($handler)) {
+				$PsrResponse->withStatus(405)->withContent('Allow Method[' . $request->getMethod() . '].');
+			} else {
+				$PsrResponse = $this->dispatcher->with($handler)->handle($PsrRequest);
+			}
+		} catch (\Throwable $throwable) {
+			$this->logger->error($throwable->getMessage(), [$throwable]);
+			$PsrResponse = $this->exception->emit($throwable, Kiri::getDi()->get(Constrict\Response::class));
+		} finally {
+			$this->emitter->sender($response, $PsrResponse->withContentType($this->contentType));
+		}
+	}
+
+
+	/**
+	 * @param Request $request
+	 * @return array<ServerRequestInterface, ResponseInterface>
+	 * @throws Exception
+	 */
+	private function initRequestResponse(Request $request): array
+	{
+		$PsrResponse = Context::setContext(ResponseInterface::class, new \Kiri\Message\Response());
+
+		/** @var ServerRequest $PsrRequest */
+		$PsrRequest = Context::setContext(RequestInterface::class, ServerRequest::createServerRequest($request));
+
+		return [$PsrRequest, $PsrResponse];
+	}
 
 
 }

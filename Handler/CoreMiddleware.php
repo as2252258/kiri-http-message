@@ -25,7 +25,6 @@ class CoreMiddleware extends Middleware
 	 */
 	public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
 	{
-
 		$requestMethod = $request->getAccessControlRequestMethod();
 		$allowHeaders = $request->getAccessControlAllowHeaders();
 

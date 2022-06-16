@@ -2,11 +2,15 @@
 
 namespace Kiri\Message;
 
-class Waite
+class Coordinator
 {
 
+	const WORKER_START = 'worker:start';
 
 	private bool $waite = true;
+
+
+	private static array $_waite = [];
 
 
 	/**
@@ -35,7 +39,7 @@ class Waite
 	/**
 	 * @param bool $waite
 	 */
-	public function setWaite(bool $waite): void
+	public function status(bool $waite): void
 	{
 		$this->waite = $waite;
 	}
