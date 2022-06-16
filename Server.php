@@ -76,10 +76,6 @@ class Server extends AbstractServer implements OnRequestInterface
 	 */
 	public function init()
 	{
-		$this->container->mapping(Emitter::class, ResponseEmitter::class);
-		$this->container->mapping(ResponseInterface::class, Constrict\Response::class);
-		$this->container->mapping(RequestInterface::class, Constrict\Request::class);
-
 		$this->emitter = $this->container->get(Emitter::class);
 
 		$exception = Config::get('exception.http', ExceptionHandlerDispatcher::class);
