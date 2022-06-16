@@ -46,9 +46,10 @@ class Server extends AbstractServer implements OnRequestInterface
 
 	private ContentType $contentType;
 
+	public Emitter $emitter;
+
 
 	/**
-	 * @param Emitter $emitter
 	 * @param ContainerInterface $container
 	 * @param Dispatcher $dispatcher
 	 * @param EventProvider $provider
@@ -57,7 +58,6 @@ class Server extends AbstractServer implements OnRequestInterface
 	 * @throws Exception
 	 */
 	public function __construct(
-		public Emitter            $emitter,
 		public ContainerInterface $container,
 		public Dispatcher         $dispatcher,
 		public EventProvider      $provider,
@@ -72,12 +72,15 @@ class Server extends AbstractServer implements OnRequestInterface
 	 * @throws ConfigException
 	 * @throws ContainerExceptionInterface
 	 * @throws NotFoundExceptionInterface
+	 * @throws Exception
 	 */
 	public function init()
 	{
 		$this->container->mapping(Emitter::class, ResponseEmitter::class);
 		$this->container->mapping(ResponseInterface::class, Constrict\Response::class);
 		$this->container->mapping(RequestInterface::class, Constrict\Request::class);
+
+		$this->emitter = $this->container->get(Emitter::class);
 
 		$exception = Config::get('exception.http', ExceptionHandlerDispatcher::class);
 		if (!in_array(ExceptionHandlerInterface::class, class_implements($exception))) {
