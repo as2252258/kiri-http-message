@@ -95,7 +95,7 @@ class Handler
 			if (!isset($callback[1])) {
 				return [];
 			}
-			return $container->getArgs($callback[0], $callback[1]);
+			return $container->getArgs($callback[1], $callback[0]);
 		} else {
 			return $container->getArgs($callback);
 		}
