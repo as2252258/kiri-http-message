@@ -24,6 +24,8 @@ use Kiri\Di\ContainerInterface;
 use Psr\Container\NotFoundExceptionInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Swoole\Http\Request;
+use Kiri\Abstracts\CoordinatorManager;
+use Kiri\Coordinator;
 use Swoole\Http\Response;
 
 
@@ -97,7 +99,7 @@ class Server extends AbstractServer implements OnRequestInterface
 	 */
 	public function onStartWaite(): void
 	{
-		CoordinatorManager::utility(Coordinator::WORKER_START)->status(true);
+		CoordinatorManager::utility(Coordinator::WORKER_START)->waite();
 	}
 
 
@@ -106,7 +108,7 @@ class Server extends AbstractServer implements OnRequestInterface
 	 */
 	public function onEndWaite(): void
 	{
-		CoordinatorManager::utility(Coordinator::WORKER_START)->status(false);
+		CoordinatorManager::utility(Coordinator::WORKER_START)->done();
 	}
 
 
