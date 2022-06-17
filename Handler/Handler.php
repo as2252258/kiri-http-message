@@ -9,6 +9,7 @@ use Kiri\Di\TargetManager;
 use Kiri\Message\Aspect\JoinPoint;
 use Kiri\Message\Aspect\OnAspectInterface;
 use Kiri\Message\Handler\Abstracts\MiddlewareManager;
+use Psr\Http\Server\MiddlewareInterface;
 use ReflectionException;
 
 class Handler
@@ -38,14 +39,32 @@ class Handler
 		$this->route = $route;
 		$this->params = $this->_injectParams($callback);
 		if (!empty($middlewares)) {
-			$this->middlewares = $middlewares;
+			$this->middlewares = $this->middlewareInstance($middlewares);
 		}
 		if ($callback instanceof Closure || !is_callable($callback, true)) {
 			$this->callback = $callback;
 			return;
 		}
-		$this->middlewares = MiddlewareManager::get($callback);
+		$this->middlewares = $this->middlewareInstance(MiddlewareManager::get($callback));
 		$this->setAspect($callback);
+	}
+
+
+	/**
+	 * @param array $middlewares
+	 * @return array
+	 */
+	private function middlewareInstance(array $middlewares): array
+	{
+		$data = [];
+		foreach ($middlewares as $middleware) {
+			$middleware = Kiri::getDi()->get($middleware);
+			if (!($middleware instanceof MiddlewareInterface)) {
+				continue;
+			}
+			$data[] = $middleware;
+		}
+		return $data;
 	}
 
 
