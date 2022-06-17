@@ -51,12 +51,15 @@ class Handler
 
 
 	/**
-	 * @param array $middlewares
+	 * @param array|null $middlewares
 	 * @return array
 	 */
-	private function middlewareInstance(array $middlewares): array
+	private function middlewareInstance(?array $middlewares): array
 	{
 		$data = [];
+		if (is_null($middlewares)) {
+			return [];
+		}
 		foreach ($middlewares as $middleware) {
 			$middleware = Kiri::getDi()->get($middleware);
 			if (!($middleware instanceof MiddlewareInterface)) {
