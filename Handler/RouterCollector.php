@@ -63,7 +63,7 @@ class RouterCollector implements \ArrayAccess, \IteratorAggregate
 				$this->_item[$route][$value->getString()] = new Handler($route, $closure, $middlewares ?? []);
 			}
 		} catch (Throwable $throwable) {
-			$this->logger->error($throwable->getMessage(), [error_trigger_format($throwable)]);
+			$this->logger->error($throwable->getMessage(), [throwable($throwable)]);
 		}
 	}
 
