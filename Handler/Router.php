@@ -37,7 +37,7 @@ class Router
 	 * @param string $name
 	 * @param Closure $closure
 	 */
-	public static function addServer(string $name, Closure $closure)
+	public static function addServer(string $name, Closure $closure): void
 	{
 		static::$type = $name;
 		$closure();
@@ -48,7 +48,7 @@ class Router
 	/**
 	 * @param Closure $handler
 	 */
-	public static function jsonp(Closure $handler)
+	public static function jsonp(Closure $handler): void
 	{
 		static::$type = 'json-rpc';
 		$handler();
@@ -159,7 +159,7 @@ class Router
 	 * @param Closure $closure
 	 * @throws
 	 */
-	public static function group(array $config, Closure $closure)
+	public static function group(array $config, Closure $closure): void
 	{
 		$router = Kiri::getDi()->get(DataGrip::class)->get(static::$type);
 
@@ -171,11 +171,10 @@ class Router
 	}
 
 
-
 	/**
 	 * @throws Exception
 	 */
-	public function scan_build_route()
+	public function scan_build_route(): void
 	{
 		scan_directory(CONTROLLER_PATH, 'app\Controller');
 
@@ -188,7 +187,7 @@ class Router
 	 * @return void
 	 * @throws Exception
 	 */
-	private function read_dir_file($path)
+	private function read_dir_file($path): void
 	{
 		$files = glob($path . '/*');
 		for ($i = 0; $i < count($files); $i++) {
@@ -206,7 +205,7 @@ class Router
 	 * @param $files
 	 * @throws Exception
 	 */
-	private function resolve_file($files)
+	private function resolve_file($files): void
 	{
 		try {
 			include "$files";
