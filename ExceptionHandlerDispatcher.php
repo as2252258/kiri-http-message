@@ -25,12 +25,10 @@ class ExceptionHandlerDispatcher implements ExceptionHandlerInterface
 	{
 		$response->withContentType(ContentType::HTML);
 		if ($exception->getCode() == 404) {
-			return $response->withBody(new Stream($exception->getMessage()))
-				->withStatus(404);
+			return $response->withBody(new Stream($exception->getMessage()))->withStatus(404);
 		}
-		$code = $exception->getCode() == 0 ? 500 : $exception->getCode();
 		return $response->withBody(new Stream(jTraceEx($exception, null, true)))
-			->withStatus($code);
+			->withStatus($exception->getCode() == 0 ? 500 : $exception->getCode());
 	}
 
 }
