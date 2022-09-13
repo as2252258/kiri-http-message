@@ -130,9 +130,9 @@ class Server extends AbstractServer implements OnRequestInterface
 			$this->logger->error($throwable->getMessage(), [$throwable]);
 			$PsrResponse = $this->exception->emit($throwable, di(Constrict\Response::class));
 		} finally {
-			if (!$PsrResponse->hasContentType()) {
-				$PsrResponse->withContentType($this->contentType);
-			}
+//			if (!$PsrResponse->hasContentType()) {
+//				$PsrResponse->withContentType($this->contentType);
+//			}
 			$this->emitter->sender($response, $PsrResponse);
 		}
 	}
