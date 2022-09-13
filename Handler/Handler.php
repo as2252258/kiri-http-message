@@ -18,16 +18,9 @@ use ReflectionException;
 class Handler
 {
 	
-	
-	public string $route = '';
-	
-	
-	public array|Closure|null $callback;
-	
 	public Dispatcher $dispatch;
 	
-	
-	public ?array $params = [];
+	public array $params;
 	
 	
 	/**
@@ -36,18 +29,32 @@ class Handler
 	 * @param array $middlewares
 	 * @throws ReflectionException
 	 */
-	public function __construct(string $route, array|Closure $callback, array $middlewares = [])
+	public function __construct(public string $route, array|Closure $callback, array $middlewares = [])
 	{
-		$this->route = $route;
-		$params = $this->_injectParams($callback);
+		$this->params = $this->_injectParams($callback);
 		if (is_array($callback) && is_callable($callback, true)) {
-			$middlewares = [...$middlewares, ...MiddlewareManager::get($callback)];
+			$middlewares = [...$middlewares, ...$this->_manager($callback)];
 			$callback = $this->setAspect($callback);
 		}
 		$middlewares = $this->middlewareInstance($middlewares);
 		$this->dispatch = new Dispatcher();
 		$this->dispatch->response = Kiri::getDi()->get(HttpResponseInterface::class);
-		$this->dispatch->with($middlewares, $callback, $params);
+		$this->dispatch->with($middlewares, $callback, $this->params);
+		$this->params = [];
+	}
+	
+	
+	/**
+	 * @param $callback
+	 * @return array
+	 */
+	private function _manager($callback): array
+	{
+		$lists = MiddlewareManager::get($callback);
+		if (empty($lists)) {
+			return [];
+		}
+		return $lists;
 	}
 	
 	
