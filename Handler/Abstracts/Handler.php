@@ -69,9 +69,6 @@ abstract class Handler implements RequestHandlerInterface
 	 */
 	public function dispatcher(CHl $handler): ResponseInterface
 	{
-		if (!is_callable($handler->callback, true)) {
-			return $this->response;
-		}
 		$response = call_user_func($handler->callback, ...$handler->params);
 		if ($response instanceof ResponseInterface) {
 			return $response;
