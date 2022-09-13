@@ -50,10 +50,6 @@ abstract class Handler implements RequestHandlerInterface
 	 */
 	protected function execute(ServerRequestInterface $request): ResponseInterface
 	{
-		if (empty($this->handler->middlewares)) {
-			return $this->dispatcher($this->handler);
-		}
-
 		$middleware = $this->handler->middlewares[$this->offset] ?? null;
 		if (is_null($middleware)) {
 			return $this->dispatcher($this->handler);
