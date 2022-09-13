@@ -130,11 +130,7 @@ class Server extends AbstractServer implements OnRequestInterface
 			$this->logger->error($throwable->getMessage(), [$throwable]);
 			$PsrResponse = $this->exception->emit($throwable, di(Constrict\Response::class));
 		} finally {
-			if (!$PsrResponse->hasContentType()) {
-				$this->emitter->sender($response, $PsrResponse->withContentType($this->contentType));
-			} else {
-				$this->emitter->sender($response, $PsrResponse);
-			}
+			$this->emitter->sender($response, $PsrResponse);
 		}
 	}
 	
@@ -167,7 +163,9 @@ class Server extends AbstractServer implements OnRequestInterface
 	 */
 	private function initRequestResponse(Request $request): array
 	{
+		/** @var ResponseInterface $PsrResponse */
 		$PsrResponse = Context::setContext(ResponseInterface::class, new \Kiri\Message\Response());
+		$PsrResponse->withContentType($this->contentType);
 		
 		/** @var ServerRequest $PsrRequest */
 		$PsrRequest = Context::setContext(RequestInterface::class, ServerRequest::createServerRequest($request));
