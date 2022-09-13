@@ -71,7 +71,7 @@ abstract class Handler implements RequestHandlerInterface
 			return $this->dispatcher();
 		}
 		$middleware = $this->middlewares[$this->offset] ?? null;
-//		$this->offset++;
+		$this->offset++;
 		if (is_null($middleware)) {
 			return $this->dispatcher();
 		} else {
