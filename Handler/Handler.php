@@ -40,7 +40,7 @@ class Handler
 	{
 		$this->route = $route;
 		$params = $this->_injectParams($callback);
-		if (is_array($callback)) {
+		if (is_array($callback) && is_callable($callback, true)) {
 			$middlewares = [...$middlewares, ...MiddlewareManager::get($callback)];
 			$callback = $this->setAspect($callback);
 		}
