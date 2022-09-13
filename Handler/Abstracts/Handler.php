@@ -43,7 +43,6 @@ abstract class Handler implements RequestHandlerInterface
 	public function with(array $middlewares, array|\Closure $closure, mixed $params): static
 	{
 		$this->offset = 0;
-		$this->response = Kiri::getDi()->get(HttpResponseInterface::class);
 		$this->params = $params;
 		$this->middlewares = $middlewares;
 		$this->handler = $closure;
@@ -101,13 +100,16 @@ abstract class Handler implements RequestHandlerInterface
 	private function transferToResponse(mixed $responseData): ResponseInterface
 	{
 		$interface = $this->response->withStatus(200);
-		if ($responseData instanceof Kiri\ToArray) {
-			$responseData = $responseData->toArray();
+		if (is_string($responseData)) {
+			return $interface->withContent($responseData);
 		}
 		if (is_array($responseData)) {
 			return $interface->withContent(Json::encode($responseData));
 		}
-		return $interface->withContent((string)$responseData);
+		if ($responseData instanceof Kiri\ToArray) {
+			$responseData = $responseData->toArray();
+		}
+		return $interface->withContent(Json::encode($responseData));
 	}
 	
 	
