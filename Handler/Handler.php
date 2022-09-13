@@ -23,7 +23,7 @@ class Handler
 	
 	public array|Closure|null $callback;
 	
-	public array|Closure|null $dispatch;
+	public Dispatcher $dispatch;
 	
 	
 	public ?array $params = [];
@@ -51,6 +51,8 @@ class Handler
 			$this->middlewares = $this->middlewareInstance(MiddlewareManager::get($callback));
 			$this->setAspect($callback);
 		}
+		$this->dispatch = new Dispatcher();
+		$this->dispatch->with($this);
 	}
 	
 	
