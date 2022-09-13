@@ -29,6 +29,9 @@ abstract class Handler implements RequestHandlerInterface
 
 	#[Inject(HttpResponseInterface::class)]
 	public HttpResponseInterface $response;
+	
+	
+	public array $middlewares = [];
 
 
 	/**
@@ -38,6 +41,7 @@ abstract class Handler implements RequestHandlerInterface
 	public function with(CHl $handler): static
 	{
 		$this->offset = 0;
+		$this->middlewares = $handler->middlewares;
 		$this->handler = $handler;
 		return $this;
 	}
@@ -50,13 +54,10 @@ abstract class Handler implements RequestHandlerInterface
 	 */
 	protected function execute(ServerRequestInterface $request): ResponseInterface
 	{
-		$middleware = $this->handler->middlewares[$this->offset] ?? null;
-		if (is_null($middleware)) {
+		$middleware = array_pop($this->middlewares);
+		if (empty($middleware)) {
 			return $this->dispatcher($this->handler);
 		}
-
-		$this->offset++;
-
 		return $middleware->process($request, $this);
 	}
 

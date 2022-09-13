@@ -9,25 +9,29 @@ use Kiri\Di\TargetManager;
 use Kiri\Message\Aspect\JoinPoint;
 use Kiri\Message\Aspect\OnAspectInterface;
 use Kiri\Message\Handler\Abstracts\MiddlewareManager;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use ReflectionException;
 
 class Handler
 {
-
-
+	
+	
 	public string $route = '';
-
-
+	
+	
 	public array|Closure|null $callback;
-
-
+	
+	public array|Closure|null $dispatch;
+	
+	
 	public ?array $params = [];
-
-
+	
+	
 	public ?array $middlewares = [];
-
-
+	
+	
 	/**
 	 * @param string $route
 	 * @param array|Closure $callback
@@ -41,15 +45,15 @@ class Handler
 		if (!empty($middlewares)) {
 			$this->middlewares = $this->middlewareInstance($middlewares);
 		}
-		if ($callback instanceof Closure || !is_callable($callback, true)) {
-			$this->callback = $callback;
-			return;
+		if ($callback instanceof Closure) {
+			$this->callback = empty($this->middlewares) ? $callback : [$this, 'middleware'];
+		} else {
+			$this->middlewares = $this->middlewareInstance(MiddlewareManager::get($callback));
+			$this->setAspect($callback);
 		}
-		$this->middlewares = $this->middlewareInstance(MiddlewareManager::get($callback));
-		$this->setAspect($callback);
 	}
-
-
+	
+	
 	/**
 	 * @param array|null $middlewares
 	 * @return array
@@ -67,10 +71,10 @@ class Handler
 			}
 			$data[] = $middleware;
 		}
-		return $data;
+		return array_reverse($data);
 	}
-
-
+	
+	
 	/**
 	 * @param $callback
 	 * @return void
@@ -89,8 +93,8 @@ class Handler
 			$this->callback = $callback;
 		}
 	}
-
-
+	
+	
 	/**
 	 * @param Aspect $aspect
 	 * @param $callback
@@ -103,8 +107,8 @@ class Handler
 			$this->callback = [$aspect, 'process'];
 		}
 	}
-
-
+	
+	
 	/**
 	 * @param array|Closure $callback
 	 * @return array|null
