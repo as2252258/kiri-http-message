@@ -54,7 +54,6 @@ class Handler
 	}
 	
 	
-	
 	/**
 	 * @param array|null $middlewares
 	 * @return array
