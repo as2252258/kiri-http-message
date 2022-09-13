@@ -45,8 +45,8 @@ class Handler
 		if (!empty($middlewares)) {
 			$this->middlewares = $this->middlewareInstance($middlewares);
 		}
-		if ($callback instanceof Closure) {
-			$this->callback = empty($this->middlewares) ? $callback : [$this, 'middleware'];
+		if ($callback instanceof Closure || !is_callable($callback, true)) {
+			$this->callback = $callback;
 		} else {
 			$this->middlewares = $this->middlewareInstance(MiddlewareManager::get($callback));
 			$this->setAspect($callback);
