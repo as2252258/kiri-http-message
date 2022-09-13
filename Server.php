@@ -153,7 +153,7 @@ class Server extends AbstractServer implements OnRequestInterface
 		} else if (is_integer($dispatcher)) {
 			$PsrResponse->withStatus(405)->withContent('Allow Method[' . $request->getMethod() . '].');
 		} else {
-			$PsrResponse = $dispatcher->dispatch->onInit()->handle($PsrRequest);
+			$PsrResponse = $dispatcher->dispatch->handle($PsrRequest);
 		}
 		return $PsrResponse;
 	}
