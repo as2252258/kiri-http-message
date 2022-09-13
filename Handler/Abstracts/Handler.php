@@ -71,7 +71,7 @@ abstract class Handler implements RequestHandlerInterface
 			return $this->dispatcher();
 		}
 		$middleware = $this->middlewares[$this->offset] ?? null;
-		$this->offset++;
+//		$this->offset++;
 		if (is_null($middleware)) {
 			return $this->dispatcher();
 		} else {
@@ -85,7 +85,7 @@ abstract class Handler implements RequestHandlerInterface
 	 */
 	public function dispatcher(): ResponseInterface
 	{
-		$this->offset = 0;
+//		$this->offset = 0;
 		$response = call_user_func($this->handler, ...$this->params);
 		if ($response instanceof ResponseInterface) {
 			return $response;
