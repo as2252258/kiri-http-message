@@ -27,7 +27,6 @@ abstract class Handler implements RequestHandlerInterface
 	public CHl $handler;
 	
 	
-	#[Inject(HttpResponseInterface::class)]
 	public HttpResponseInterface $response;
 	
 	
@@ -41,6 +40,7 @@ abstract class Handler implements RequestHandlerInterface
 	public function with(CHl $handler): static
 	{
 		$this->offset = 0;
+		$this->response = Kiri::getDi()->get(HttpResponseInterface::class);
 		$this->middlewares = $handler->middlewares;
 		$this->handler = $handler;
 		return $this;
