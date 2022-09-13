@@ -162,9 +162,9 @@ class RouterCollector implements \ArrayAccess, \IteratorAggregate
 	/**
 	 * @param string $path
 	 * @param string $method
-	 * @return Dispatcher|int|null
+	 * @return Handler|int|null
 	 */
-	public function find(string $path, string $method): Dispatcher|int|null
+	public function find(string $path, string $method): Handler|int|null
 	{
 		return match ($method) {
 			'OPTIONS' => $this->options($path, $method),
