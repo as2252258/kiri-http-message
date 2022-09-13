@@ -30,9 +30,6 @@ class Handler
 	public ?array $params = [];
 	
 	
-	public ?array $middlewares = [];
-	
-	
 	/**
 	 * @param string $route
 	 * @param array|Closure $callback
@@ -42,22 +39,15 @@ class Handler
 	public function __construct(string $route, array|Closure $callback, array $middlewares = [])
 	{
 		$this->route = $route;
-		$this->params = $this->_injectParams($callback);
-		if (empty($middlewares)) {
-			$this->middlewares = $this->middlewareInstance($middlewares);
+		$params = $this->_injectParams($callback);
+		if (is_array($callback)) {
+			$middlewares = [...$middlewares, ...MiddlewareManager::get($callback)];
+			$callback = $this->setAspect($callback);
 		}
-		if ($callback instanceof Closure || !is_callable($callback, true)) {
-			$this->callback = $callback;
-		} else {
-			$this->middlewares = $this->middlewareInstance(MiddlewareManager::get($callback));
-			$this->setAspect($callback);
-		}
+		$middlewares = $this->middlewareInstance($middlewares);
 		$this->dispatch = new Dispatcher();
 		$this->dispatch->response = Kiri::getDi()->get(HttpResponseInterface::class);
-		$this->dispatch->with($this->middlewares, $this->callback, $this->params);
-		
-		$this->callback = null;
-		$this->middlewares = null;
+		$this->dispatch->with($middlewares, $callback, $params);
 	}
 	
 	
@@ -84,10 +74,10 @@ class Handler
 	
 	/**
 	 * @param $callback
-	 * @return void
+	 * @return mixed
 	 * @throws ReflectionException
 	 */
-	private function setAspect($callback): void
+	private function setAspect($callback): mixed
 	{
 		$aspect = TargetManager::get($callback[0])->searchNote($callback[1], Aspect::class);
 		if (!empty($aspect) && is_array($aspect)) {
@@ -95,9 +85,9 @@ class Handler
 		}
 		$callback[0] = Kiri::getDi()->get($callback[0]);
 		if (!is_null($aspect)) {
-			$this->recover($aspect, $callback);
+			return $this->recover($aspect, $callback);
 		} else {
-			$this->callback = $callback;
+			return $callback;
 		}
 	}
 	
@@ -105,15 +95,16 @@ class Handler
 	/**
 	 * @param Aspect $aspect
 	 * @param $callback
-	 * @return void
+	 * @return mixed
 	 */
-	public function recover(Aspect $aspect, $callback): void
+	public function recover(Aspect $aspect, $callback): mixed
 	{
 		$aspect = Kiri::getDi()->get($aspect->aspect);
 		if ($aspect instanceof OnAspectInterface) {
 			$this->params = [new JoinPoint($callback, $this->params)];
-			$this->callback = [$aspect, 'process'];
+			$callback = [$aspect, 'process'];
 		}
+		return $callback;
 	}
 	
 	
