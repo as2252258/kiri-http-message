@@ -85,6 +85,7 @@ abstract class Handler implements RequestHandlerInterface
 	 */
 	public function dispatcher(): ResponseInterface
 	{
+		$this->offset = 0;
 		$response = call_user_func($this->handler, ...$this->params);
 		if ($response instanceof ResponseInterface) {
 			return $response;
