@@ -119,6 +119,10 @@ class Server extends AbstractServer implements OnRequestInterface
 	 */
 	public function onRequest(Request $request, Response $response): void
 	{
+		$response->setStatusCode(200);
+		$response->end();
+		return;
+		
 		try {
 			CoordinatorManager::utility(Coordinator::WORKER_START)->yield();
 			
