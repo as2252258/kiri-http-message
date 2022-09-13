@@ -105,9 +105,9 @@ class Handler
 	/**
 	 * @param Aspect $aspect
 	 * @param $callback
-	 * @return array|Closure|null
+	 * @return void
 	 */
-	public function recover(Aspect $aspect, $callback): array|Closure|null
+	public function recover(Aspect $aspect, $callback): void
 	{
 		$aspect = Kiri::getDi()->get($aspect->aspect);
 		if ($aspect instanceof OnAspectInterface) {
