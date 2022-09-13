@@ -128,7 +128,7 @@ class Server extends AbstractServer implements OnRequestInterface
 			$PsrResponse = $this->executed($request, $PsrRequest, $PsrResponse);
 		} catch (\Throwable $throwable) {
 			$this->logger->error($throwable->getMessage(), [$throwable]);
-			$PsrResponse = $this->exception->emit($throwable, Kiri::getDi()->get(Constrict\Response::class));
+			$PsrResponse = $this->exception->emit($throwable, di(Constrict\Response::class));
 		} finally {
 			if (!$PsrResponse->hasContentType()) {
 				$PsrResponse->withContentType($this->contentType);
@@ -153,7 +153,7 @@ class Server extends AbstractServer implements OnRequestInterface
 		} else if (is_integer($dispatcher)) {
 			$PsrResponse->withStatus(405)->withContent('Allow Method[' . $request->getMethod() . '].');
 		} else {
-			$PsrResponse = $dispatcher->dispatch->handle($PsrRequest);
+			$PsrResponse = $dispatcher->dispatch->onInit()->handle($PsrRequest);
 		}
 		return $PsrResponse;
 	}
