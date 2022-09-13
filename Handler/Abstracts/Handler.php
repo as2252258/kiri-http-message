@@ -77,6 +77,7 @@ abstract class Handler implements RequestHandlerInterface
 	}
 
 
+	
 	/**
 	 * @param mixed $responseData
 	 * @return ResponseInterface
