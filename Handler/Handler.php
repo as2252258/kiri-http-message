@@ -42,7 +42,7 @@ class Handler
 	{
 		$this->route = $route;
 		$this->params = $this->_injectParams($callback);
-		if (!empty($middlewares)) {
+		if (empty($middlewares)) {
 			$this->middlewares = $this->middlewareInstance($middlewares);
 		}
 		if ($callback instanceof Closure || !is_callable($callback, true)) {
