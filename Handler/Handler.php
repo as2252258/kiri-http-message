@@ -72,7 +72,7 @@ class Handler
 			}
 			$data[] = $middleware;
 		}
-		return array_reverse($data);
+		return $data;
 	}
 	
 	
