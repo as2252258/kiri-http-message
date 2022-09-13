@@ -24,25 +24,29 @@ abstract class Handler implements RequestHandlerInterface
 	protected int $offset = 0;
 	
 	
-	public CHl $handler;
+	public array|\Closure $handler;
 	
 	
 	public HttpResponseInterface $response;
 	
 	
 	public array $middlewares = [];
+	public array $params = [];
 	
 	
 	/**
-	 * @param CHl $handler
+	 * @param array $middlewares
+	 * @param array|\Closure $closure
+	 * @param mixed $params
 	 * @return $this
 	 */
-	public function with(CHl $handler): static
+	public function with(array $middlewares, array|\Closure $closure, mixed $params): static
 	{
 		$this->offset = 0;
 		$this->response = Kiri::getDi()->get(HttpResponseInterface::class);
-		$this->middlewares = $handler->middlewares;
-		$this->handler = $handler;
+		$this->params = $params;
+		$this->middlewares = $middlewares;
+		$this->handler = $closure;
 		return $this;
 	}
 	
@@ -55,11 +59,11 @@ abstract class Handler implements RequestHandlerInterface
 	protected function execute(ServerRequestInterface $request): ResponseInterface
 	{
 		if (empty($this->middlewares)) {
-			return $this->dispatcher($this->handler);
+			return $this->dispatcher();
 		}
 		$middleware = $this->middlewares[$this->offset] ?? null;
 		if (is_null($middleware)) {
-			return $this->dispatcher($this->handler);
+			return $this->dispatcher();
 		} else {
 			return $middleware->process($request, $this);
 		}
@@ -67,13 +71,11 @@ abstract class Handler implements RequestHandlerInterface
 	
 	
 	/**
-	 * @param CHl $handler
 	 * @return ResponseInterface
-	 * @throws Kiri\Exception\ConfigException
 	 */
-	public function dispatcher(CHl $handler): ResponseInterface
+	public function dispatcher(): ResponseInterface
 	{
-		$response = call_user_func($handler->callback, ...$handler->params);
+		$response = call_user_func($this->handler, ...$this->params);
 		if ($response instanceof ResponseInterface) {
 			return $response;
 		}

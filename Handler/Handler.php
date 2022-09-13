@@ -54,7 +54,10 @@ class Handler
 		}
 		$this->dispatch = new Dispatcher();
 		$this->dispatch->response = Kiri::getDi()->get(HttpResponseInterface::class);
-		$this->dispatch->with($this);
+		$this->dispatch->with($this->middlewares, $this->callback, $this->params);
+		
+		$this->callback = null;
+		$this->middlewares = null;
 	}
 	
 	
@@ -102,8 +105,9 @@ class Handler
 	/**
 	 * @param Aspect $aspect
 	 * @param $callback
+	 * @return array|Closure|null
 	 */
-	public function recover(Aspect $aspect, $callback): void
+	public function recover(Aspect $aspect, $callback): array|Closure|null
 	{
 		$aspect = Kiri::getDi()->get($aspect->aspect);
 		if ($aspect instanceof OnAspectInterface) {
