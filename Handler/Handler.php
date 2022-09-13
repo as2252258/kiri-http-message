@@ -8,6 +8,7 @@ use Kiri\Annotation\Aspect;
 use Kiri\Di\TargetManager;
 use Kiri\Message\Aspect\JoinPoint;
 use Kiri\Message\Aspect\OnAspectInterface;
+use Kiri\Message\Constrict\ResponseInterface as HttpResponseInterface;
 use Kiri\Message\Handler\Abstracts\MiddlewareManager;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -52,6 +53,7 @@ class Handler
 			$this->setAspect($callback);
 		}
 		$this->dispatch = new Dispatcher();
+		$this->dispatch->response = Kiri::getDi()->get(HttpResponseInterface::class);
 		$this->dispatch->with($this);
 	}
 	
