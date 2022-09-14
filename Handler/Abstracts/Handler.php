@@ -20,20 +20,20 @@ use Kiri\Core\Json;
 
 abstract class Handler implements RequestHandlerInterface
 {
-	
+
 	protected int $offset = 0;
-	
-	
+
+
 	public array|\Closure $handler;
-	
-	
+
+
 	public HttpResponseInterface $response;
-	
-	
+
+
 	public array $middlewares = [];
 	public array $params = [];
-	
-	
+
+
 	/**
 	 * @param array $middlewares
 	 * @param array|\Closure $closure
@@ -48,8 +48,18 @@ abstract class Handler implements RequestHandlerInterface
 		$this->handler = $closure;
 		return $this;
 	}
-	
-	
+
+
+	/**
+	 * @return $this
+	 */
+	public function onInit(): static
+	{
+		$this->offset = 0;
+		return $this;
+	}
+
+
 	/**
 	 * @param ServerRequestInterface $request
 	 * @return ResponseInterface
@@ -68,22 +78,21 @@ abstract class Handler implements RequestHandlerInterface
 			return $middleware->process($request, $this);
 		}
 	}
-	
-	
+
+
 	/**
 	 * @return ResponseInterface
 	 */
 	public function dispatcher(): ResponseInterface
 	{
-//		$this->offset = 0;
 		$response = call_user_func($this->handler, ...$this->params);
 		if ($response instanceof ResponseInterface) {
 			return $response;
 		}
 		return $this->transferToResponse($response);
 	}
-	
-	
+
+
 	/**
 	 * @param mixed $responseData
 	 * @return ResponseInterface
@@ -102,6 +111,6 @@ abstract class Handler implements RequestHandlerInterface
 		}
 		return $interface->withContent(Json::encode($responseData));
 	}
-	
-	
+
+
 }
