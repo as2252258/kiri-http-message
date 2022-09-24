@@ -178,7 +178,7 @@ class Router
 	{
 		scan_directory(CONTROLLER_PATH, 'App');
 
-//		$this->read_dir_file(APP_PATH . 'routes');
+		$this->read_dir_file(APP_PATH . 'routes');
 	}
 
 
