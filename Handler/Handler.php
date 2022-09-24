@@ -125,6 +125,7 @@ class Handler
 			if (!isset($callback[1])) {
 				return [];
 			}
+			var_dump($callback);
 			return $container->getArgs($callback[1], $callback[0]);
 		} else {
 			return $container->getArgs($callback);
