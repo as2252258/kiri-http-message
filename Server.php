@@ -130,6 +130,7 @@ class Server extends AbstractServer implements OnRequestInterface
 			$this->logger->error($throwable->getMessage(), [$throwable]);
 			$PsrResponse = $this->exception->emit($throwable, di(Constrict\Response::class));
 		} finally {
+			Context::clearAll();
 			$this->emitter->sender($response, $PsrResponse);
 		}
 	}
