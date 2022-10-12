@@ -51,12 +51,13 @@ abstract class Handler implements RequestHandlerInterface
 
 
 	/**
-	 * @return $this
+	 * @param $request
+	 * @return ResponseInterface
 	 */
-	public function onInit(): static
+	public function recover($request): ResponseInterface
 	{
 		$this->offset = 0;
-		return $this;
+		return $this->handle($request);
 	}
 
 

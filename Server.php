@@ -8,6 +8,7 @@ use Kiri;
 use Kiri\Abstracts\AbstractServer;
 use Kiri\Abstracts\Config;
 use Kiri\Context;
+use Kiri\Message\Response as Psr7Response;
 use Kiri\Events\EventProvider;
 use Kiri\Exception\ConfigException;
 use Kiri\Message\Abstracts\ExceptionHandlerInterface;
@@ -24,6 +25,7 @@ use Kiri\Di\ContainerInterface;
 use Psr\Container\NotFoundExceptionInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Swoole\Http\Request;
+use Psr\Http\Message\ResponseInterface as PsrResponseInterface;
 use Kiri\Abstracts\CoordinatorManager;
 use Kiri\Coordinator;
 use Swoole\Http\Response;
@@ -34,23 +36,23 @@ use Swoole\Http\Response;
  */
 class Server extends AbstractServer implements OnRequestInterface
 {
-	
+
 	use ResponseHelper;
-	
+
 	public RouterCollector $router;
-	
-	
+
+
 	/**
 	 * @var ExceptionHandlerInterface
 	 */
 	public ExceptionHandlerInterface $exception;
-	
-	
+
+
 	private ContentType $contentType;
-	
+
 	public Emitter $emitter;
-	
-	
+
+
 	/**
 	 * @param ContainerInterface $container
 	 * @param Dispatcher $dispatcher
@@ -68,8 +70,8 @@ class Server extends AbstractServer implements OnRequestInterface
 	{
 		parent::__construct($config);
 	}
-	
-	
+
+
 	/**
 	 * @throws ConfigException
 	 * @throws ContainerExceptionInterface
@@ -79,21 +81,21 @@ class Server extends AbstractServer implements OnRequestInterface
 	public function init()
 	{
 		$this->emitter = $this->container->get(Emitter::class);
-		
+
 		$exception = Config::get('exception.http', ExceptionHandlerDispatcher::class);
 		if (!in_array(ExceptionHandlerInterface::class, class_implements($exception))) {
 			$exception = ExceptionHandlerDispatcher::class;
 		}
 		$this->exception = $this->container->get($exception);
-		
+
 		$this->provider->on(OnBeforeWorkerStart::class, [$this, 'onStartWaite']);
 		$this->provider->on(OnAfterWorkerStart::class, [$this, 'onEndWaite']);
-		
+
 		$this->contentType = Config::get('response.format', ContentType::JSON);
 		$this->router = $this->dataGrip->get('http');
 	}
-	
-	
+
+
 	/**
 	 * @return void
 	 */
@@ -101,8 +103,8 @@ class Server extends AbstractServer implements OnRequestInterface
 	{
 		CoordinatorManager::utility(Coordinator::WORKER_START)->waite();
 	}
-	
-	
+
+
 	/**
 	 * @return void
 	 */
@@ -110,8 +112,8 @@ class Server extends AbstractServer implements OnRequestInterface
 	{
 		CoordinatorManager::utility(Coordinator::WORKER_START)->done();
 	}
-	
-	
+
+
 	/**
 	 * @param Request $request
 	 * @param Response $response
@@ -121,10 +123,11 @@ class Server extends AbstractServer implements OnRequestInterface
 	{
 		try {
 			CoordinatorManager::utility(Coordinator::WORKER_START)->yield();
-			
+
 			/** @var ServerRequest $PsrRequest */
+			/** @var Psr7Response $PsrResponse */
 			[$PsrRequest, $PsrResponse] = $this->initRequestResponse($request);
-			
+
 			$PsrResponse = $this->executed($request, $PsrRequest, $PsrResponse);
 		} catch (\Throwable $throwable) {
 			$this->logger->error($throwable->getMessage(), [$throwable]);
@@ -134,29 +137,28 @@ class Server extends AbstractServer implements OnRequestInterface
 			$this->emitter->sender($response, $PsrResponse);
 		}
 	}
-	
-	
+
+
 	/**
-	 * @param $request
-	 * @param $PsrRequest
-	 * @param $PsrResponse
-	 * @return mixed
+	 * @param Request $request
+	 * @param ServerRequest $PsrRequest
+	 * @param Psr7Response $PsrResponse
+	 * @return PsrResponseInterface
 	 * @throws Exception
 	 */
-	private function executed($request, $PsrRequest, $PsrResponse): mixed
+	private function executed(Request $request, ServerRequest $PsrRequest, Psr7Response $PsrResponse): PsrResponseInterface
 	{
 		$dispatcher = $this->router->find($request->server['request_uri'], $request->getMethod());
 		if (is_null($dispatcher)) {
-			$PsrResponse->withStatus(404)->withContent('Page not found[' . $request->server['request_uri'] . '].');
+			return $PsrResponse->withStatus(404)->withContent('Page not found[' . $request->server['request_uri'] . '].');
 		} else if (is_integer($dispatcher)) {
-			$PsrResponse->withStatus(405)->withContent('Allow Method[' . $request->getMethod() . '].');
+			return $PsrResponse->withStatus(405)->withContent('Allow Method[' . $request->getMethod() . '].');
 		} else {
-			$PsrResponse = $dispatcher->dispatch->onInit()->handle($PsrRequest);
+			return $dispatcher->dispatch->recover($PsrRequest);
 		}
-		return $PsrResponse;
 	}
-	
-	
+
+
 	/**
 	 * @param Request $request
 	 * @return array<ServerRequestInterface, ResponseInterface>
@@ -167,12 +169,22 @@ class Server extends AbstractServer implements OnRequestInterface
 		/** @var ResponseInterface $PsrResponse */
 		$PsrResponse = Context::setContext(ResponseInterface::class, new \Kiri\Message\Response());
 		$PsrResponse->withContentType($this->contentType);
-		
+
+		$serverRequest = (new ServerRequest())->withData($request->getData())
+			->withServerParams($request->server)
+			->withServerTarget($request)
+			->withCookieParams($request->cookie ?? [])
+			->withUri(Uri::parseUri($request))
+			->withQueryParams($request->get)
+			->withUploadedFiles($request->files)
+			->withMethod($request->getMethod())
+			->withParsedBody($request->post);
+
 		/** @var ServerRequest $PsrRequest */
-		$PsrRequest = Context::setContext(RequestInterface::class, ServerRequest::createServerRequest($request));
-		
+		$PsrRequest = Context::setContext(RequestInterface::class, $serverRequest);
+
 		return [$PsrRequest, $PsrResponse];
 	}
-	
-	
+
+
 }
