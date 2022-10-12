@@ -74,7 +74,11 @@ abstract class Handler implements RequestHandlerInterface
 		$middleware = $this->middlewares[$this->offset] ?? null;
 		$this->offset++;
 		if (is_null($middleware)) {
-			return $this->dispatcher();
+			$response = call_user_func($this->handler, ...$this->params);
+			if ($response instanceof ResponseInterface) {
+				return $response;
+			}
+			return $this->transferToResponse($response);
 		} else {
 			return $middleware->process($request, $this);
 		}
