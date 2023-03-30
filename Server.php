@@ -129,32 +129,14 @@ class Server extends AbstractServer implements OnRequestInterface
 			/** @var Psr7Response $PsrResponse */
 			[$PsrRequest, $PsrResponse] = $this->initRequestResponse($request);
 
-			$PsrResponse = $this->executed($request, $PsrRequest, $PsrResponse);
+			$dispatcher = $this->router->find($PsrRequest->getUri()->getPath(), $request->getMethod());
+
+			$PsrResponse = $dispatcher->dispatch->recover($PsrRequest);
 		} catch (\Throwable $throwable) {
 			$this->logger->error($throwable->getMessage(), [$throwable]);
 			$PsrResponse = $this->exception->emit($throwable, di(Constrict\Response::class));
 		} finally {
 			$this->emitter->sender($response, $PsrResponse);
-		}
-	}
-
-
-	/**
-	 * @param Request $request
-	 * @param ServerRequest $PsrRequest
-	 * @param Psr7Response $PsrResponse
-	 * @return PsrResponseInterface
-	 * @throws Exception
-	 */
-	private function executed(Request $request, ServerRequest $PsrRequest, Psr7Response $PsrResponse): PsrResponseInterface
-	{
-		$dispatcher = $this->router->find($request->server['request_uri'], $request->getMethod());
-		if (is_null($dispatcher)) {
-			return $PsrResponse->withStatus(404)->withContent('Page not found[' . $request->server['request_uri'] . '].');
-		} else if (is_integer($dispatcher)) {
-			return $PsrResponse->withStatus(405)->withContent('Allow Method[' . $request->getMethod() . '].');
-		} else {
-			return $dispatcher->dispatch->recover($PsrRequest);
 		}
 	}
 

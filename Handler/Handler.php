@@ -31,10 +31,9 @@ class Handler
 	{
 		$this->params = $this->_injectParams($callback);
 		if (is_array($callback) && is_callable($callback, true)) {
-			$middlewares = [...$middlewares, ...$this->_manager($callback)];
+			$middlewares = array_unique([...$middlewares, ...$this->_manager($callback)],SORT_REGULAR);
 			$callback = $this->setAspect($callback);
 		}
-		$middlewares = $this->middlewareInstance($middlewares);
 		$this->dispatch = new Dispatcher();
 		$this->dispatch->response = Kiri::getDi()->get(HttpResponseInterface::class);
 		$this->dispatch->with($middlewares, $callback, $this->params);
@@ -57,27 +56,6 @@ class Handler
 	
 	
 	/**
-	 * @param array|null $middlewares
-	 * @return array
-	 */
-	private function middlewareInstance(?array $middlewares): array
-	{
-		$data = [];
-		if (is_null($middlewares)) {
-			return [];
-		}
-		foreach ($middlewares as $middleware) {
-			$middleware = Kiri::getDi()->get($middleware);
-			if (!($middleware instanceof MiddlewareInterface)) {
-				continue;
-			}
-			$data[] = $middleware;
-		}
-		return $data;
-	}
-	
-	
-	/**
 	 * @param $callback
 	 * @return mixed
 	 * @throws ReflectionException
@@ -96,7 +74,7 @@ class Handler
 		}
 	}
 	
-	
+
 	/**
 	 * @param Aspect $aspect
 	 * @param $callback

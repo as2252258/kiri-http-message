@@ -80,6 +80,7 @@ abstract class Handler implements RequestHandlerInterface
 			}
 			return $this->transferToResponse($response);
 		} else {
+			$middleware = Kiri::getDi()->get($middleware);
 			return $middleware->process($request, $this);
 		}
 	}

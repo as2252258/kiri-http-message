@@ -48,7 +48,7 @@ class RouterCollector implements \ArrayAccess, \IteratorAggregate
 
 
 	/**
-	 * @return array
+	 * @return array<MiddlewareInterface>
 	 */
 	public function getGlobalMiddlewares(): array
 	{
@@ -59,12 +59,13 @@ class RouterCollector implements \ArrayAccess, \IteratorAggregate
 	/**
 	 * @param string $handler
 	 * @return void
+	 * @throws Exception
 	 */
 	public function addGlobalMiddlewares(string $handler): void
 	{
 		$handler = Kiri::getDi()->get($handler);
-		if (!($handler instanceof MiddlewareInterface)) {
-			return;
+		if (!in_array(MiddlewareInterface::class, class_implements($handler))) {
+			throw new Exception('The Middleware must instance ' . MiddlewareInterface::class);
 		}
 		$this->globalMiddlewares[] = $handler;
 	}
@@ -80,14 +81,12 @@ class RouterCollector implements \ArrayAccess, \IteratorAggregate
 	{
 		try {
 			$route = $this->_splicing_routing($route);
-			if ($closure instanceof Closure) {
-				$middlewares = $this->loadMiddlewares($closure, $route);
-			} else if (is_string($closure)) {
+			if (is_string($closure)) {
 				$this->_route_analysis($closure);
 			}
-			$middlewares = [...$this->getGlobalMiddlewares(), ...($middlewares ?? [])];
+			$middlewares = Kiri\Abstracts\Config::get('request.middlewares', []);
 			foreach ($method as $value) {
-				$this->_item[$route][$value->getString()] = new Handler($route, $closure, $middlewares ?? []);
+				$this->_item[$route][$value->getString()] = new Handler($route, $closure, $middlewares);
 			}
 		} catch (Throwable $throwable) {
 			$this->logger->error($throwable->getMessage(), [throwable($throwable)]);
@@ -96,15 +95,25 @@ class RouterCollector implements \ArrayAccess, \IteratorAggregate
 
 
 	/**
-	 * @param string|Closure $closure
+	 * @param string $closure
 	 */
-	private function _route_analysis(string|Closure &$closure)
+	private function _route_analysis(string &$closure)
 	{
 		$closure = explode('@', $closure);
 		$closure[0] = $this->addNamespace($closure[0]);
-		if (!class_exists($closure[0])) {
-			return;
+		if (class_exists($closure[0])) {
+			$this->_registerMiddleware($closure[0], $closure[1]);
 		}
+	}
+
+
+	/**
+	 * @param string $class
+	 * @param string $method
+	 * @return void
+	 */
+	private function _registerMiddleware(string $class, string $method): void
+	{
 		$middleware = array_column($this->groupTack, 'middleware');
 		if (empty($middleware = array_filter($middleware))) {
 			return;
@@ -114,7 +123,7 @@ class RouterCollector implements \ArrayAccess, \IteratorAggregate
 				$value = [$value];
 			}
 			foreach ($value as $item) {
-				MiddlewareManager::add($closure[0], $closure[1], $item);
+				MiddlewareManager::add($class, $method, $item);
 			}
 		}
 	}
@@ -190,14 +199,28 @@ class RouterCollector implements \ArrayAccess, \IteratorAggregate
 	 * @param string $path
 	 * @param string $method
 	 * @return Handler|int|null
+	 * @throws ReflectionException|Kiri\Exception\ConfigException
 	 */
 	public function find(string $path, string $method): Handler|int|null
 	{
-		return match ($method) {
+		$dispatcher = match ($method) {
 			'OPTIONS' => $this->options($path, $method),
 			default => $this->other($path, $method)
 		};
+		if (is_null($dispatcher)) {
+			$notfound = Kiri::getDi()->get(NotFoundController::class);
 
+			$middlewares = Kiri\Abstracts\Config::get('request.middlewares', []);
+
+			$dispatcher = new Handler($path, [$notfound, 'fail'], $middlewares);
+		} else if (is_integer($dispatcher)) {
+			$notfound = Kiri::getDi()->get(MethodErrorController::class);
+
+			$middlewares = Kiri\Abstracts\Config::get('request.middlewares', []);
+
+			$dispatcher = new Handler($path, [$notfound, 'fail'], $middlewares);
+		}
+		return $dispatcher;
 	}
 
 
