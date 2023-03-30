@@ -31,7 +31,7 @@ class Handler
 	{
 		$this->params = $this->_injectParams($callback);
 		if (is_array($callback) && is_callable($callback, true)) {
-			$middlewares = array_unique([...$middlewares, ...$this->_manager($callback)],SORT_REGULAR);
+			$middlewares = array_values(array_unique([...$middlewares, ...$this->_manager($callback)],SORT_REGULAR));
 			$callback = $this->setAspect($callback);
 		}
 		$this->dispatch = new Dispatcher();
