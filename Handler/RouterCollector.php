@@ -208,17 +208,13 @@ class RouterCollector implements \ArrayAccess, \IteratorAggregate
 			default => $this->other($path, $method)
 		};
 		if (is_null($dispatcher)) {
-			$notfound = Kiri::getDi()->get(NotFoundController::class);
-
 			$middlewares = Kiri\Abstracts\Config::get('request.middlewares', []);
 
-			$dispatcher = new Handler($path, [$notfound, 'fail'], $middlewares);
+			$dispatcher = new Handler($path, [NotFoundController::class, 'fail'], $middlewares);
 		} else if (is_integer($dispatcher)) {
-			$notfound = Kiri::getDi()->get(MethodErrorController::class);
-
 			$middlewares = Kiri\Abstracts\Config::get('request.middlewares', []);
 
-			$dispatcher = new Handler($path, [$notfound, 'fail'], $middlewares);
+			$dispatcher = new Handler($path, [MethodErrorController::class, 'fail'], $middlewares);
 		}
 		return $dispatcher;
 	}
