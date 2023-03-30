@@ -175,7 +175,7 @@ class Router
 	 */
 	public function scan_build_route(): void
 	{
-		scan_directory(CONTROLLER_PATH, 'App');
+		scan_directory(APP_PATH, 'App');
 
 		$this->read_dir_file(APP_PATH . 'routes');
 	}
