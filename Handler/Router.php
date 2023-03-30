@@ -56,6 +56,13 @@ class Router
 	}
 
 
+	public static function Use(array|Closure|string $handler): void
+	{
+		$router = Kiri::getDi()->get(DataGrip::class)->get(static::$type);
+		$router->addGlobalMiddlewares($handler);
+	}
+
+
 	/**
 	 * @param string $route
 	 * @param string|Closure $handler

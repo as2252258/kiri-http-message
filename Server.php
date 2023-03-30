@@ -27,6 +27,7 @@ use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
 use Psr\Http\Message\ResponseInterface as PsrResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Server\RequestHandlerInterface;
 use Swoole\Http\Request;
 use Swoole\Http\Response;
 
@@ -133,7 +134,6 @@ class Server extends AbstractServer implements OnRequestInterface
 			$this->logger->error($throwable->getMessage(), [$throwable]);
 			$PsrResponse = $this->exception->emit($throwable, di(Constrict\Response::class));
 		} finally {
-			Context::clearAll();
 			$this->emitter->sender($response, $PsrResponse);
 		}
 	}

@@ -32,6 +32,9 @@ class RouterCollector implements \ArrayAccess, \IteratorAggregate
 	public LoggerInterface $logger;
 
 
+	private array $globalMiddlewares = [];
+
+
 	public array $groupTack = [];
 
 
@@ -41,6 +44,35 @@ class RouterCollector implements \ArrayAccess, \IteratorAggregate
 	public function getIterator(): Traversable
 	{
 		return new \ArrayIterator($this->_item);
+	}
+
+
+	/**
+	 * @return array
+	 */
+	public function getGlobalMiddlewares(): array
+	{
+		return $this->globalMiddlewares;
+	}
+
+
+	/**
+	 * @param array|Closure|string $handler
+	 * @return void
+	 */
+	public function addGlobalMiddlewares(array|Closure|string $handler): void
+	{
+		if (is_string($handler)) {
+			$handler = Kiri::getDi()->get($handler);
+		} else if (is_array($handler)) {
+			if (!isset($handler[0])) {
+				return;
+			}
+			if (is_string($handler[0])) {
+				$handler[0] = Kiri::getDi()->get($handler[0]);
+			}
+		}
+		$this->globalMiddlewares[] = $handler;
 	}
 
 
@@ -59,6 +91,7 @@ class RouterCollector implements \ArrayAccess, \IteratorAggregate
 			} else if (is_string($closure)) {
 				$this->_route_analysis($closure);
 			}
+			$middlewares = [...$this->getGlobalMiddlewares(), ...($middlewares ?? [])];
 			foreach ($method as $value) {
 				$this->_item[$route][$value->getString()] = new Handler($route, $closure, $middlewares ?? []);
 			}
