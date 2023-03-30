@@ -81,10 +81,12 @@ class RouterCollector implements \ArrayAccess, \IteratorAggregate
 	{
 		try {
 			$route = $this->_splicing_routing($route);
-			if (is_string($closure)) {
+			$middlewares = Kiri\Abstracts\Config::get('request.middlewares', []);
+			if ($closure instanceof Closure) {
+				$middlewares = $this->_getRouteMiddlewares();;
+			} else if (is_string($closure)) {
 				$this->_route_analysis($closure);
 			}
-			$middlewares = Kiri\Abstracts\Config::get('request.middlewares', []);
 			foreach ($method as $value) {
 				$this->_item[$route][$value->getString()] = new Handler($route, $closure, $middlewares);
 			}
@@ -96,6 +98,7 @@ class RouterCollector implements \ArrayAccess, \IteratorAggregate
 
 	/**
 	 * @param string $closure
+	 * @throws Exception
 	 */
 	private function _route_analysis(string &$closure)
 	{
@@ -108,23 +111,40 @@ class RouterCollector implements \ArrayAccess, \IteratorAggregate
 
 
 	/**
+	 * @return array
+	 * @throws Exception
+	 */
+	private function _getRouteMiddlewares(): array
+	{
+		$middleware = array_column($this->groupTack, 'middleware');
+		if (count($middleware = array_filter($middleware)) > 0) {
+			foreach ($middleware as $value) {
+				if (is_string($value)) {
+					$value = [$value];
+				}
+				foreach ($value as $item) {
+					if (!in_array(MiddlewareInterface::class, class_implements($item, true))) {
+						throw new Exception("middleware handler must instance MiddlewareInterface::class");
+					}
+					$middleware[] = $item;
+				}
+			}
+		}
+		return $middleware;
+	}
+
+
+	/**
 	 * @param string $class
 	 * @param string $method
 	 * @return void
+	 * @throws Exception
 	 */
 	private function _registerMiddleware(string $class, string $method): void
 	{
-		$middleware = array_column($this->groupTack, 'middleware');
-		if (empty($middleware = array_filter($middleware))) {
-			return;
-		}
+		$middleware = $this->_getRouteMiddlewares();
 		foreach ($middleware as $value) {
-			if (is_string($value)) {
-				$value = [$value];
-			}
-			foreach ($value as $item) {
-				MiddlewareManager::add($class, $method, $item);
-			}
+			MiddlewareManager::add($class, $method, $value);
 		}
 	}
 
