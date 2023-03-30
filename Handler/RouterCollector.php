@@ -57,20 +57,14 @@ class RouterCollector implements \ArrayAccess, \IteratorAggregate
 
 
 	/**
-	 * @param array|Closure|string $handler
+	 * @param string $handler
 	 * @return void
 	 */
-	public function addGlobalMiddlewares(array|Closure|string $handler): void
+	public function addGlobalMiddlewares(string $handler): void
 	{
-		if (is_string($handler)) {
-			$handler = Kiri::getDi()->get($handler);
-		} else if (is_array($handler)) {
-			if (!isset($handler[0])) {
-				return;
-			}
-			if (is_string($handler[0])) {
-				$handler[0] = Kiri::getDi()->get($handler[0]);
-			}
+		$handler = Kiri::getDi()->get($handler);
+		if (!($handler instanceof MiddlewareInterface)) {
+			return;
 		}
 		$this->globalMiddlewares[] = $handler;
 	}
