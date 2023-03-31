@@ -68,7 +68,7 @@ abstract class Handler implements RequestHandlerInterface
 	 */
 	protected function execute(ServerRequestInterface $request): ResponseInterface
 	{
-		if (empty($this->middlewares)) {
+		if (count($this->middlewares) < 1) {
 			return $this->dispatcher();
 		}
 		$middleware = $this->middlewares[$this->offset] ?? null;
@@ -80,8 +80,7 @@ abstract class Handler implements RequestHandlerInterface
 			}
 			return $this->transferToResponse($response);
 		} else {
-			$middleware = Kiri::getDi()->get($middleware);
-			return $middleware->process($request, $this);
+			return di($middleware)->process($request, $this);
 		}
 	}
 
