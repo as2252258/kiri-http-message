@@ -12,6 +12,11 @@ class HashTree
 	private string $path = '';
 	
 	
+	/**
+	 * @param string $path
+	 * @param HashTree $tree
+	 * @return HashTree
+	 */
 	public function addChild(string $path, HashTree $tree): HashTree
 	{
 		$this->childes[$path] = $tree;
@@ -19,6 +24,10 @@ class HashTree
 	}
 	
 	
+	/**
+	 * @param string $path
+	 * @return HashTree|null
+	 */
 	public function search(string $path): ?HashTree
 	{
 		foreach ($this->childes as $child) {
