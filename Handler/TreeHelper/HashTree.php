@@ -2,7 +2,6 @@
 
 namespace Kiri\Message\Handler;
 
-use Closure;
 
 abstract class HashTree
 {
