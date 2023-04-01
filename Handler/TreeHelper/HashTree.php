@@ -1,7 +1,8 @@
 <?php
 
-namespace Kiri\Message\Handler;
+namespace Kiri\Message\Handler\TreeHelper;
 
+use Kiri\Message\Handler\Handler;
 
 abstract class HashTree
 {
