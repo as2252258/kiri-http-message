@@ -33,10 +33,6 @@ class RouterCollector implements \ArrayAccess, \IteratorAggregate
 	public LoggerInterface $logger;
 
 
-	#[Inject(HashTree::class)]
-	public HashTree $hashTree;
-
-
 	private array $globalMiddlewares = [];
 
 
