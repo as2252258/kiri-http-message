@@ -47,7 +47,7 @@ abstract class HashTree
 	 * @param HashTree $leaf
 	 * @return HashTree
 	 */
-	public function addLeaf(string $path, self $leaf): HashTree
+	public function addLeaf(string $path, mixed $leaf): TreeLeafInterface
 	{
 		if (isset($this->leaf[$path])) {
 			return $this->leaf[$path];

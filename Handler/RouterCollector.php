@@ -123,11 +123,16 @@ class RouterCollector implements \ArrayAccess, \IteratorAggregate
 
 		$start = array_shift($json);
 
+		/** @var TreeLeafInterface $class */
+		$class = new ($requestContainer::class)();
+		$class->setPath($start);
+
 		$handler = new Handler($path, $closure, $middlewares);
-		if (count($json) < 2) {
-			$requestContainer->addLeaf($start, new $requestContainer($start, $handler));
+		$end = $requestContainer->addLeaf($start, $class);
+
+		if (count($json) < 1) {
+			$class->setHandler($handler);
 		} else {
-			$end = $requestContainer->addLeaf($start, new $requestContainer($start));
 			foreach ($json as $item) {
 				if ($item === "") {
 					continue;
@@ -164,12 +169,13 @@ class RouterCollector implements \ArrayAccess, \IteratorAggregate
 		if (count($json) <= 0) {
 			$json = ['/'];
 		}
+		/** @var TreeLeafInterface $parent */
 		$parent = $requestContainer->searchLeaf(array_shift($json));
 		if ($parent === null) {
 			return $this->NotFundHandler($path);
 		}
 		if (count($json) < 1) {
-			return $this->NotFundHandler($path);
+			return $parent->getHandler();
 		}
 		foreach ($json as $item) {
 			if ($item == "") {
