@@ -7,6 +7,7 @@ use Closure;
 use Exception;
 use Kiri;
 use Kiri\Annotation\Inject;
+use Kiri\Exception\ConfigException;
 use Kiri\Message\Handler\Abstracts\MiddlewareManager;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Log\LoggerInterface;
@@ -30,6 +31,10 @@ class RouterCollector implements \ArrayAccess, \IteratorAggregate
 	 */
 	#[Inject(LoggerInterface::class)]
 	public LoggerInterface $logger;
+
+
+	#[Inject(HashTree::class)]
+	public HashTree $hashTree;
 
 
 	private array $globalMiddlewares = [];
@@ -88,11 +93,117 @@ class RouterCollector implements \ArrayAccess, \IteratorAggregate
 				$this->_route_analysis($closure);
 			}
 			foreach ($method as $value) {
-				$this->_item[$route][$value->getString()] = new Handler($route, $closure, $middlewares);
+				$this->register($route, $value->getString(), $closure, $middlewares);
 			}
 		} catch (Throwable $throwable) {
 			$this->logger->error($throwable->getMessage(), [throwable($throwable)]);
 		}
+	}
+
+
+	/**
+	 * @param string $path
+	 * @param string $method
+	 * @param $closure
+	 * @param $middlewares
+	 * @return void
+	 * @throws ReflectionException
+	 */
+	public function register(string $path, string $method, $closure, $middlewares): void
+	{
+		$requestContainer = $this->getRouterContainer($method);
+
+		$json = explode('/', ltrim($path, '/'));
+		$start = array_shift($json);
+
+		$handler = new Handler($path, $closure, $middlewares);
+		if (count($json) < 2) {
+			$requestContainer->addLeaf($start, new $requestContainer($start, $handler));
+		} else {
+			$end = $requestContainer->addLeaf($start, new $requestContainer($start));
+			foreach ($json as $item) {
+				if ($item === "") {
+					continue;
+				}
+				$leaf = new $requestContainer($item);
+				if (!$end->hasLeaf()) {
+					$end = $end->addLeaf($item, $leaf);
+				} else {
+					$search = $end->searchLeaf($item);
+					if ($search == null) {
+						$end = $end->addLeaf($item, $leaf);
+					} else {
+						$end = $search;
+					}
+				}
+			}
+			$end->setHandler($handler);
+		}
+	}
+
+
+	/**
+	 * @param string $path
+	 * @param string $method
+	 * @return HashTree|null
+	 * @throws ConfigException
+	 * @throws ReflectionException
+	 */
+	public function query(string $path, string $method): ?Handler
+	{
+		$requestContainer = $this->getRouterContainer($method);
+
+		$json = explode('/', ltrim($path, '/'));
+
+		$parent = $requestContainer->searchLeaf(array_shift($json));
+		if ($parent === null) {
+			return $this->NotFundHandler($path);
+		}
+		foreach ($json as $item) {
+			if ($item == "") {
+				continue;
+			}
+			$parent = $parent->searchLeaf($item);
+			if ($parent === null) {
+				break;
+			}
+		}
+		if ($parent === null) {
+			return $this->NotFundHandler($path);
+		} else {
+			return $parent->getHandler();
+		}
+	}
+
+
+	/**
+	 * @param string $path
+	 * @return Handler
+	 * @throws Kiri\Exception\ConfigException
+	 * @throws ReflectionException
+	 */
+	private function NotFundHandler(string $path): Handler
+	{
+		$middlewares = Kiri\Abstracts\Config::get('request.middlewares', []);
+
+		return new Handler($path, [NotFoundController::class, 'fail'], $middlewares);
+	}
+
+
+	/**
+	 * @param string $method
+	 * @return HashTree
+	 */
+	public function getRouterContainer(string $method): HashTree
+	{
+		$methods = [
+			RequestMethod::REQUEST_DELETE->getString()  => Kiri\Message\Handler\TreeHelper\MethodDelete::class,
+			RequestMethod::REQUEST_PUT->getString()     => Kiri\Message\Handler\TreeHelper\MethodGet::class,
+			RequestMethod::REQUEST_POST->getString()    => Kiri\Message\Handler\TreeHelper\MethodPost::class,
+			RequestMethod::REQUEST_OPTIONS->getString() => Kiri\Message\Handler\TreeHelper\MethodOptions::class,
+			RequestMethod::REQUEST_GET->getString()     => Kiri\Message\Handler\TreeHelper\MethodGet::class,
+		];
+		return Kiri::getDi()->get($methods[$method]);
 	}
 
 
