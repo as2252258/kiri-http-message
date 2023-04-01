@@ -87,9 +87,9 @@ abstract class HashTree
 
 	/**
 	 * @param string $path
-	 * @return HashTree|null
+	 * @return static|null
 	 */
-	public function searchLeaf(string $path): ?Handler
+	public function searchLeaf(string $path): ?static
 	{
 		foreach ($this->leaf as $item) {
 			if ($item->path == $path) {
