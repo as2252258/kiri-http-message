@@ -74,11 +74,7 @@ abstract class Handler implements RequestHandlerInterface
 		$middleware = $this->middlewares[$this->offset] ?? null;
 		$this->offset++;
 		if (is_null($middleware)) {
-			$response = call_user_func($this->handler, ...$this->params);
-			if ($response instanceof ResponseInterface) {
-				return $response;
-			}
-			return $this->transferToResponse($response);
+			return $this->dispatcher();
 		} else {
 			return di($middleware)->process($request, $this);
 		}
@@ -104,17 +100,13 @@ abstract class Handler implements RequestHandlerInterface
 	 */
 	private function transferToResponse(mixed $responseData): ResponseInterface
 	{
-		$interface = $this->response->withStatus(200);
 		if (is_string($responseData)) {
-			return $interface->withContent($responseData);
-		}
-		if (is_array($responseData)) {
-			return $interface->withContent(Json::encode($responseData));
+			return $this->response->withStatus(200)->withContent($responseData);
 		}
 		if ($responseData instanceof Kiri\ToArray) {
 			$responseData = $responseData->toArray();
 		}
-		return $interface->withContent(Json::encode($responseData));
+		return $this->response->withStatus(200)->withContent(Json::encode($responseData));
 	}
 
 
