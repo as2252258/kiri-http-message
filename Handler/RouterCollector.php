@@ -111,6 +111,10 @@ class RouterCollector implements \ArrayAccess, \IteratorAggregate
 		$requestContainer = $this->getRouterContainer($method);
 
 		$json = explode('/', ltrim($path, '/'));
+		if (count($json) <= 0) {
+			$json = ['/'];
+		}
+		
 		$start = array_shift($json);
 
 		$handler = new Handler($path, $closure, $middlewares);
@@ -151,9 +155,14 @@ class RouterCollector implements \ArrayAccess, \IteratorAggregate
 		$requestContainer = $this->getRouterContainer($method);
 
 		$json = explode('/', ltrim($path, '/'));
-
+		if (count($json) <= 0) {
+			$json = ['/'];
+		}
 		$parent = $requestContainer->searchLeaf(array_shift($json));
 		if ($parent === null) {
+			return $this->NotFundHandler($path);
+		}
+		if (count($json) < 1) {
 			return $this->NotFundHandler($path);
 		}
 		foreach ($json as $item) {
@@ -199,6 +208,7 @@ class RouterCollector implements \ArrayAccess, \IteratorAggregate
 			RequestMethod::REQUEST_POST->getString()    => Kiri\Message\Handler\TreeHelper\MethodPost::class,
 			RequestMethod::REQUEST_OPTIONS->getString() => Kiri\Message\Handler\TreeHelper\MethodOptions::class,
 			RequestMethod::REQUEST_GET->getString()     => Kiri\Message\Handler\TreeHelper\MethodGet::class,
+			RequestMethod::REQUEST_HEAD->getString()    => Kiri\Message\Handler\TreeHelper\MethodHead::class,
 		];
 		return Kiri::getDi()->get($methods[$method]);
 	}
