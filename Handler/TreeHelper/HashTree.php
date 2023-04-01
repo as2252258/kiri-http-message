@@ -21,23 +21,24 @@ abstract class HashTree
 
 
 	/**
-	 * @var Handler
+	 * @var Handler|null
 	 */
-	protected Handler $handler;
+	protected ?Handler $handler = null;
+
+
+	public function getPath(string $path): string
+	{
+		// TODO: Implement getPath() method.
+		return $this->path;
+	}
 
 
 	/**
 	 * @param string $path
-	 * @param Handler|null $handler
 	 */
-	public function __construct(string $path = "", ?Handler $handler = null)
+	public function setPath(string $path): void
 	{
-		if ($path != "") {
-			$this->path = $path;
-		}
-		if ($handler != null) {
-			$this->handler = $handler;
-		}
+		$this->path = $path;
 	}
 
 
