@@ -10,6 +10,12 @@ use Kiri\Annotation\Inject;
 use Kiri\Exception\ConfigException;
 use Kiri\Message\Handler\Abstracts\MiddlewareManager;
 use Kiri\Message\Handler\TreeHelper\HashTree;
+use Kiri\Message\Handler\TreeHelper\MethodDelete;
+use Kiri\Message\Handler\TreeHelper\MethodGet;
+use Kiri\Message\Handler\TreeHelper\MethodHead;
+use Kiri\Message\Handler\TreeHelper\MethodOptions;
+use Kiri\Message\Handler\TreeHelper\MethodPost;
+use Kiri\Message\Handler\TreeHelper\TreeLeafInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Log\LoggerInterface;
 use ReflectionException;
@@ -114,7 +120,7 @@ class RouterCollector implements \ArrayAccess, \IteratorAggregate
 		if (count($json) <= 0) {
 			$json = ['/'];
 		}
-		
+
 		$start = array_shift($json);
 
 		$handler = new Handler($path, $closure, $middlewares);
@@ -198,17 +204,17 @@ class RouterCollector implements \ArrayAccess, \IteratorAggregate
 
 	/**
 	 * @param string $method
-	 * @return HashTree
+	 * @return TreeLeafInterface
 	 */
-	public function getRouterContainer(string $method): HashTree
+	public function getRouterContainer(string $method): TreeLeafInterface
 	{
 		$methods = [
-			RequestMethod::REQUEST_DELETE->getString()  => Kiri\Message\Handler\TreeHelper\MethodDelete::class,
-			RequestMethod::REQUEST_PUT->getString()     => Kiri\Message\Handler\TreeHelper\MethodGet::class,
-			RequestMethod::REQUEST_POST->getString()    => Kiri\Message\Handler\TreeHelper\MethodPost::class,
-			RequestMethod::REQUEST_OPTIONS->getString() => Kiri\Message\Handler\TreeHelper\MethodOptions::class,
-			RequestMethod::REQUEST_GET->getString()     => Kiri\Message\Handler\TreeHelper\MethodGet::class,
-			RequestMethod::REQUEST_HEAD->getString()    => Kiri\Message\Handler\TreeHelper\MethodHead::class,
+			RequestMethod::REQUEST_DELETE->getString()  => MethodDelete::class,
+			RequestMethod::REQUEST_PUT->getString()     => MethodGet::class,
+			RequestMethod::REQUEST_POST->getString()    => MethodPost::class,
+			RequestMethod::REQUEST_OPTIONS->getString() => MethodOptions::class,
+			RequestMethod::REQUEST_GET->getString()     => MethodGet::class,
+			RequestMethod::REQUEST_HEAD->getString()    => MethodHead::class,
 		];
 		return Kiri::getDi()->get($methods[$method]);
 	}

@@ -4,7 +4,7 @@ namespace Kiri\Message\Handler\TreeHelper;
 
 use Kiri\Message\Handler\Handler;
 
-class MethodOptions extends HashTree
+class MethodOptions extends HashTree implements TreeLeafInterface
 {
 
 

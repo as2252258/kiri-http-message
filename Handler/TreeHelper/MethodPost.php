@@ -3,7 +3,7 @@
 namespace Kiri\Message\Handler\TreeHelper;
 
 
-class MethodPost extends HashTree
+class MethodPost extends HashTree implements TreeLeafInterface
 {
 
 }
