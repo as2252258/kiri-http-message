@@ -9,6 +9,7 @@ use Kiri;
 use Kiri\Annotation\Inject;
 use Kiri\Exception\ConfigException;
 use Kiri\Message\Handler\Abstracts\MiddlewareManager;
+use Kiri\Message\Handler\TreeHelper\HashTree;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Log\LoggerInterface;
 use ReflectionException;
