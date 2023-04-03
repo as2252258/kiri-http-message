@@ -149,7 +149,7 @@ class Server extends AbstractServer implements OnRequestInterface
 	private function initRequestResponse(Request $request): array
 	{
 		/** @var ResponseInterface $PsrResponse */
-		$PsrResponse = Context::setContext(ResponseInterface::class, new \Kiri\Message\Response());
+		$PsrResponse = Context::set(ResponseInterface::class, new \Kiri\Message\Response());
 		$PsrResponse->withContentType($this->contentType);
 
 		$serverRequest = (new ServerRequest())->withData($request->getData())
@@ -163,7 +163,7 @@ class Server extends AbstractServer implements OnRequestInterface
 			->withParsedBody($request->post);
 
 		/** @var ServerRequest $PsrRequest */
-		$PsrRequest = Context::setContext(RequestInterface::class, $serverRequest);
+		$PsrRequest = Context::set(RequestInterface::class, $serverRequest);
 
 		return [$PsrRequest, $PsrResponse];
 	}
