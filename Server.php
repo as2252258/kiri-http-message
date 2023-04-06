@@ -125,7 +125,7 @@ class Server extends AbstractServer implements OnRequestInterface
 			/** @var ServerRequest $PsrRequest */
 			$PsrRequest = $this->initRequestAndResponse($request);
 
-			$dispatcher = $this->router->query($request->header['request_uri'], $request->getMethod());
+			$dispatcher = $this->router->query($request->server['request_uri'], $request->getMethod());
 
 			$PsrResponse = $dispatcher->dispatch->recover($PsrRequest);
 		} catch (\Throwable $throwable) {
