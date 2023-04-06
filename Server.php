@@ -158,7 +158,6 @@ class Server extends AbstractServer implements OnRequestInterface
 			->withCookieParams($request->cookie ?? [])
 			->withUri(Uri::parseUri($request))
 			->withQueryParams($request->get)
-			->withHeaders($request->header)
 			->withUploadedFiles($request->files)
 			->withMethod($request->getMethod())
 			->withParsedBody($request->post);
