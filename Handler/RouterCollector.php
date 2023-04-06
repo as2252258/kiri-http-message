@@ -114,43 +114,29 @@ class RouterCollector implements \ArrayAccess, \IteratorAggregate
 	 */
 	public function register(string $path, string $method, $closure, $middlewares): void
 	{
-		$requestContainer = $this->getRouterContainer($method);
+		$end = $this->getRouterContainer($method);
 
-		$json = explode('/', ltrim($path, '/'));
-		if (count($json) <= 0) {
-			$json = ['/'];
-		}
-
-		$start = array_shift($json);
+		$json = str_split($path);
 
 		/** @var TreeLeafInterface $class */
-		$class = new ($requestContainer::class)();
-		$class->setPath($start);
+		$class = new ($end::class)();
+		$class->setPath($json[0]);
 
 		$handler = new Handler($path, $closure, $middlewares);
-		$end = $requestContainer->addLeaf($start, $class);
-
-		if (count($json) < 1) {
-			$class->setHandler($handler);
-		} else {
-			foreach ($json as $item) {
-				if ($item === "") {
-					continue;
-				}
-				$leaf = new $requestContainer($item);
-				if (!$end->hasLeaf()) {
+		foreach ($json as $item) {
+			$leaf = new ($end::class)($item);
+			if (!$end->hasLeaf()) {
+				$end = $end->addLeaf($item, $leaf);
+			} else {
+				$search = $end->searchLeaf($item);
+				if ($search == null) {
 					$end = $end->addLeaf($item, $leaf);
 				} else {
-					$search = $end->searchLeaf($item);
-					if ($search == null) {
-						$end = $end->addLeaf($item, $leaf);
-					} else {
-						$end = $search;
-					}
+					$end = $search;
 				}
 			}
-			$end->setHandler($handler);
 		}
+		$end->setHandler($handler);
 	}
 
 
@@ -163,41 +149,22 @@ class RouterCollector implements \ArrayAccess, \IteratorAggregate
 	 */
 	public function query(string $path, string $method): ?Handler
 	{
-		$requestContainer = $this->getRouterContainer($method);
-
-		$json = explode('/', ltrim($path, '/'));
-		if (count($json) <= 0) {
-			$json = ['/'];
-		}
-		/** @var TreeLeafInterface $parent */
-		$parent = $requestContainer->searchLeaf(array_shift($json));
-		if ($parent === null) {
-			return $this->NotFundHandler($path);
-		}
-		if (count($json) < 1) {
-			return $parent->getHandler();
-		}
-		foreach ($json as $item) {
-			if ($item == "") {
-				continue;
-			}
+		$parent = $this->getRouterContainer($method);
+		
+		$string = str_split($path);
+		foreach ($string as $item) {
 			$parent = $parent->searchLeaf($item);
 			if ($parent === null) {
-				break;
+				return $this->NotFundHandler($path);
 			}
 		}
-		if ($parent === null) {
-			return $this->NotFundHandler($path);
-		} else {
-			return $parent->getHandler();
-		}
+		return $parent->getHandler();
 	}
 
 
 	/**
 	 * @param string $path
 	 * @return Handler
-	 * @throws Kiri\Exception\ConfigException
 	 * @throws ReflectionException
 	 */
 	private function NotFundHandler(string $path): Handler

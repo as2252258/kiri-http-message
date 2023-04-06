@@ -123,7 +123,7 @@ class Server extends AbstractServer implements OnRequestInterface
 	public function onRequest(Request $request, Response $response): void
 	{
 		try {
-			CoordinatorManager::utility(Coordinator::WORKER_START)->yield();
+//			CoordinatorManager::utility(Coordinator::WORKER_START)->yield();
 
 			/** @var ServerRequest $PsrRequest */
 			/** @var Psr7Response $PsrResponse */
