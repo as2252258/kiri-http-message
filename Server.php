@@ -142,7 +142,7 @@ class Server extends AbstractServer implements OnRequestInterface
 	 * @return RequestInterface
 	 * @throws Exception
 	 */
-	private function initRequestAndResponse(Request $request): RequestInterface
+	private function initRequestAndResponse(Request $request): \Psr\Http\Message\RequestInterface
 	{
 		/** @var ResponseInterface $PsrResponse */
 		$PsrResponse = Context::set(ResponseInterface::class, new Psr7Response());
