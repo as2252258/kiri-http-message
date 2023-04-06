@@ -4,6 +4,7 @@ namespace Kiri\Message\Handler;
 
 
 use Closure;
+use Database\Base\CollectionIterator;
 use Exception;
 use Kiri;
 use Kiri\Annotation\Inject;
@@ -118,13 +119,11 @@ class RouterCollector implements \ArrayAccess, \IteratorAggregate
 
 		$json = str_split($path);
 
-		/** @var TreeLeafInterface $class */
-		$class = new ($end::class)();
-		$class->setPath($json[0]);
-
 		$handler = new Handler($path, $closure, $middlewares);
 		foreach ($json as $item) {
+			/** @var TreeLeafInterface $leaf */
 			$leaf = new ($end::class)($item);
+			$leaf->setPath($item);
 			if (!$end->hasLeaf()) {
 				$end = $end->addLeaf($item, $leaf);
 			} else {
