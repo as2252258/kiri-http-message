@@ -152,12 +152,13 @@ class Server extends AbstractServer implements OnRequestInterface
 		$PsrResponse = Context::set(ResponseInterface::class, new \Kiri\Message\Response());
 		$PsrResponse->withContentType($this->contentType);
 
-		$serverRequest = (new ServerRequest())->withData($request->getData())
+		$serverRequest = (new ServerRequest())->withData($request->getContent())
 			->withServerParams($request->server)
 			->withServerTarget($request)
 			->withCookieParams($request->cookie ?? [])
 			->withUri(Uri::parseUri($request))
 			->withQueryParams($request->get)
+			->withHeaders($request->header)
 			->withUploadedFiles($request->files)
 			->withMethod($request->getMethod())
 			->withParsedBody($request->post);
