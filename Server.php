@@ -149,10 +149,10 @@ class Server extends AbstractServer implements OnRequestInterface
 	private function initRequestResponse(Request $request): array
 	{
 		/** @var ResponseInterface $PsrResponse */
-		$PsrResponse = Context::set(ResponseInterface::class, copy(\Kiri\Message\Response::class));
+		$PsrResponse = Context::set(ResponseInterface::class, replica(\Kiri\Message\Response::class));
 		$PsrResponse->withContentType($this->contentType);
 
-		$serverRequest = copy(ServerRequest::class)->withData($request->getContent())
+		$serverRequest = replica(ServerRequest::class)->withData($request->getContent())
 			->withServerParams($request->server)
 			->withServerTarget($request)
 			->withCookieParams($request->cookie ?? [])
