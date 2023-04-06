@@ -122,13 +122,10 @@ class Server extends AbstractServer implements OnRequestInterface
 	public function onRequest(Request $request, Response $response): void
 	{
 		try {
-//			CoordinatorManager::utility(Coordinator::WORKER_START)->yield();
-
 			/** @var ServerRequest $PsrRequest */
-			/** @var Psr7Response $PsrResponse */
-			[$PsrRequest, $PsrResponse] = $this->initRequestResponse($request);
+			$PsrRequest = $this->initRequestAndResponse($request);
 
-			$dispatcher = $this->router->query($PsrRequest->getUri()->getPath(), $request->getMethod());
+			$dispatcher = $this->router->query($request->header['request_uri'], $request->getMethod());
 
 			$PsrResponse = $dispatcher->dispatch->recover($PsrRequest);
 		} catch (\Throwable $throwable) {
@@ -138,14 +135,14 @@ class Server extends AbstractServer implements OnRequestInterface
 			$this->emitter->sender($response, $PsrResponse);
 		}
 	}
-
-
+	
+	
 	/**
 	 * @param Request $request
-	 * @return array<ServerRequestInterface, ResponseInterface>
+	 * @return RequestInterface
 	 * @throws Exception
 	 */
-	private function initRequestResponse(Request $request): array
+	private function initRequestAndResponse(Request $request): RequestInterface
 	{
 		/** @var ResponseInterface $PsrResponse */
 		$PsrResponse = Context::set(ResponseInterface::class, new Psr7Response());
@@ -155,16 +152,13 @@ class Server extends AbstractServer implements OnRequestInterface
 			->withServerParams($request->server)
 			->withServerTarget($request)
 			->withCookieParams($request->cookie ?? [])
-			->withUri(Uri::parseUri($request))
 			->withQueryParams($request->get)
 			->withUploadedFiles($request->files)
 			->withMethod($request->getMethod())
 			->withParsedBody($request->post);
 
 		/** @var ServerRequest $PsrRequest */
-		$PsrRequest = Context::set(RequestInterface::class, $serverRequest);
-
-		return [$PsrRequest, $PsrResponse];
+		return Context::set(RequestInterface::class, $serverRequest);
 	}
 
 
