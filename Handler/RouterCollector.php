@@ -4,7 +4,6 @@ namespace Kiri\Message\Handler;
 
 
 use Closure;
-use Database\Base\CollectionIterator;
 use Exception;
 use Kiri;
 use Kiri\Annotation\Inject;
