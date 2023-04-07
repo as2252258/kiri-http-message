@@ -14,6 +14,7 @@ use Kiri\Message\Handler\TreeHelper\MethodDelete;
 use Kiri\Message\Handler\TreeHelper\MethodGet;
 use Kiri\Message\Handler\TreeHelper\MethodHead;
 use Kiri\Message\Handler\TreeHelper\MethodOptions;
+use Kiri\Message\Handler\TreeHelper\MethodPut;
 use Kiri\Message\Handler\TreeHelper\MethodPost;
 use Kiri\Message\Handler\TreeHelper\TreeLeafInterface;
 use Psr\Http\Server\MiddlewareInterface;
@@ -44,6 +45,28 @@ class RouterCollector implements \ArrayAccess, \IteratorAggregate
 
 
 	public array $groupTack = [];
+
+
+	/**
+	 * @var array
+	 */
+	private array $methods = [];
+
+
+	/**
+	 *
+	 */
+	public function __construct()
+	{
+		$this->methods = [
+			RequestMethod::REQUEST_DELETE->getString()  => di(MethodDelete::class),
+			RequestMethod::REQUEST_PUT->getString()     => di(MethodGet::class),
+			RequestMethod::REQUEST_POST->getString()    => di(MethodPost::class),
+			RequestMethod::REQUEST_OPTIONS->getString() => di(MethodOptions::class),
+			RequestMethod::REQUEST_GET->getString()     => di(MethodGet::class),
+			RequestMethod::REQUEST_HEAD->getString()    => di(MethodHead::class),
+		];
+	}
 
 
 	/**
@@ -114,9 +137,9 @@ class RouterCollector implements \ArrayAccess, \IteratorAggregate
 	 */
 	public function register(string $path, string $method, $closure, $middlewares): void
 	{
-		$end = $this->getRouterContainer($method);
+		$end = $this->methods[$method];
 
-		$json = str_split($path,4);
+		$json = str_split($path, 4);
 
 		$handler = new Handler($path, $closure, $middlewares);
 		foreach ($json as $item) {
@@ -147,9 +170,9 @@ class RouterCollector implements \ArrayAccess, \IteratorAggregate
 	 */
 	public function query(string $path, string $method): ?Handler
 	{
-		$parent = $this->getRouterContainer($method);
-		
-		$string = str_split($path,4);
+		$parent = $this->methods[$method];
+
+		$string = str_split($path, 4);
 		foreach ($string as $item) {
 			$parent = $parent->searchLeaf($item);
 			if ($parent === null) {
@@ -170,24 +193,6 @@ class RouterCollector implements \ArrayAccess, \IteratorAggregate
 		$middlewares = Kiri\Abstracts\Config::get('request.middlewares', []);
 
 		return new Handler($path, [NotFoundController::class, 'fail'], $middlewares);
-	}
-
-
-	/**
-	 * @param string $method
-	 * @return TreeLeafInterface
-	 */
-	public function getRouterContainer(string $method): TreeLeafInterface
-	{
-		$methods = [
-			RequestMethod::REQUEST_DELETE->getString()  => MethodDelete::class,
-			RequestMethod::REQUEST_PUT->getString()     => MethodGet::class,
-			RequestMethod::REQUEST_POST->getString()    => MethodPost::class,
-			RequestMethod::REQUEST_OPTIONS->getString() => MethodOptions::class,
-			RequestMethod::REQUEST_GET->getString()     => MethodGet::class,
-			RequestMethod::REQUEST_HEAD->getString()    => MethodHead::class,
-		];
-		return Kiri::getDi()->get($methods[$method]);
 	}
 
 
