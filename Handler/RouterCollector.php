@@ -116,7 +116,7 @@ class RouterCollector implements \ArrayAccess, \IteratorAggregate
 	{
 		$end = $this->getRouterContainer($method);
 
-		$json = str_split($path);
+		$json = str_split($path,4);
 
 		$handler = new Handler($path, $closure, $middlewares);
 		foreach ($json as $item) {
@@ -149,7 +149,7 @@ class RouterCollector implements \ArrayAccess, \IteratorAggregate
 	{
 		$parent = $this->getRouterContainer($method);
 		
-		$string = str_split($path);
+		$string = str_split($path,4);
 		foreach ($string as $item) {
 			$parent = $parent->searchLeaf($item);
 			if ($parent === null) {
