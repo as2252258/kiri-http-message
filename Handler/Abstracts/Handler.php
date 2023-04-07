@@ -68,6 +68,7 @@ abstract class Handler implements RequestHandlerInterface
 	 */
 	protected function execute(ServerRequestInterface $request): ResponseInterface
 	{
+		return $this->_execute($request);
 		$response = call_user_func($this->handler, ...$this->params);
 		if ($response instanceof ResponseInterface) {
 			return $response;
