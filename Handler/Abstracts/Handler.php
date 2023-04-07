@@ -46,9 +46,6 @@ abstract class Handler implements RequestHandlerInterface
 		$this->params = $params;
 		$this->middlewares = $middlewares;
 		$this->handler = $closure;
-		if (count($middlewares) > 0) {
-			$this->handler = fn (ServerRequestInterface $request) => $this->_execute($request);
-		}
 		return $this;
 	}
 
