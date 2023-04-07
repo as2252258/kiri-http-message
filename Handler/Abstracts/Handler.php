@@ -46,6 +46,11 @@ abstract class Handler implements RequestHandlerInterface
 		$this->params = $params;
 		$this->middlewares = $middlewares;
 		$this->handler = $closure;
+		if (count($middlewares) > 0) {
+			$this->handler = function (ServerRequestInterface $request) {
+				return $this->_execute($request);
+			};
+		}
 		return $this;
 	}
 
@@ -68,15 +73,30 @@ abstract class Handler implements RequestHandlerInterface
 	 */
 	protected function execute(ServerRequestInterface $request): ResponseInterface
 	{
-		if (count($this->middlewares) < 1) {
+		$response = call_user_func($this->handler, ...$this->params);
+		if ($response instanceof ResponseInterface) {
+			return $response;
+		}
+		return $this->transferToResponse($response);
+	}
+
+
+	/**
+	 * @param ServerRequestInterface $request
+	 * @return ResponseInterface
+	 * @throws Exception
+	 */
+	protected function _execute(ServerRequestInterface $request): ResponseInterface
+	{
+		if (!isset($this->middlewares[$this->offset])) {
 			return $this->dispatcher();
 		}
 		$middleware = $this->middlewares[$this->offset] ?? null;
 		$this->offset++;
-		if (is_null($middleware)) {
-			return $this->dispatcher();
+		if ($middleware instanceof MiddlewareInterface) {
+			return $middleware->process($request, $this);
 		} else {
-			return di($middleware)->process($request, $this);
+			return $this->dispatcher();
 		}
 	}
 

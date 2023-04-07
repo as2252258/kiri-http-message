@@ -15,12 +15,12 @@ use ReflectionException;
 
 class Handler
 {
-	
+
 	public Dispatcher $dispatch;
-	
+
 	public array $params;
-	
-	
+
+
 	/**
 	 * @param string $route
 	 * @param array|Closure $callback
@@ -31,16 +31,29 @@ class Handler
 	{
 		$this->params = $this->_injectParams($callback);
 		if (is_array($callback) && is_callable($callback, true)) {
-			$middlewares = array_values(array_unique([...$middlewares, ...$this->_manager($callback)],SORT_REGULAR));
+			$middlewares = array_values(array_unique([...$middlewares, ...$this->_manager($callback)], SORT_REGULAR));
 			$callback = $this->setAspect($callback);
 		}
 		$this->dispatch = new Dispatcher();
 		$this->dispatch->response = Kiri::getDi()->get(HttpResponseInterface::class);
-		$this->dispatch->with($middlewares, $callback, $this->params);
+		$this->dispatch->with($this->resetMiddlewares($middlewares), $callback, $this->params);
 		$this->params = [];
 	}
-	
-	
+
+
+	/**
+	 * @param array $middlewares
+	 * @return array
+	 */
+	private function resetMiddlewares(array $middlewares): array
+	{
+		foreach ($middlewares as $key => $middleware) {
+			$middlewares[$key] = di($middleware);
+		}
+		return $middlewares;
+	}
+
+
 	/**
 	 * @param $callback
 	 * @return array
@@ -53,8 +66,8 @@ class Handler
 		}
 		return $lists;
 	}
-	
-	
+
+
 	/**
 	 * @param $callback
 	 * @return mixed
@@ -73,7 +86,7 @@ class Handler
 			return $callback;
 		}
 	}
-	
+
 
 	/**
 	 * @param Aspect $aspect
@@ -89,8 +102,8 @@ class Handler
 		}
 		return $callback;
 	}
-	
-	
+
+
 	/**
 	 * @param array|Closure $callback
 	 * @return array|null
