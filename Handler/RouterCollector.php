@@ -60,7 +60,7 @@ class RouterCollector implements \ArrayAccess, \IteratorAggregate
 	{
 		$this->methods = [
 			RequestMethod::REQUEST_DELETE->getString()  => di(MethodDelete::class),
-			RequestMethod::REQUEST_PUT->getString()     => di(MethodGet::class),
+			RequestMethod::REQUEST_PUT->getString()     => di(MethodPut::class),
 			RequestMethod::REQUEST_POST->getString()    => di(MethodPost::class),
 			RequestMethod::REQUEST_OPTIONS->getString() => di(MethodOptions::class),
 			RequestMethod::REQUEST_GET->getString()     => di(MethodGet::class),
