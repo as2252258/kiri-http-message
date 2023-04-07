@@ -68,32 +68,12 @@ abstract class Handler implements RequestHandlerInterface
 	 */
 	protected function execute(ServerRequestInterface $request): ResponseInterface
 	{
-		return $this->_execute($request);
-		$response = call_user_func($this->handler, ...$this->params);
-		if ($response instanceof ResponseInterface) {
-			return $response;
-		}
-		return $this->transferToResponse($response);
-	}
-
-
-	/**
-	 * @param ServerRequestInterface $request
-	 * @return ResponseInterface
-	 * @throws Exception
-	 */
-	protected function _execute(ServerRequestInterface $request): ResponseInterface
-	{
-		if (!isset($this->middlewares[$this->offset])) {
-			return $this->dispatcher();
-		}
 		$middleware = $this->middlewares[$this->offset] ?? null;
-		$this->offset++;
-		if ($middleware instanceof MiddlewareInterface) {
-			return $middleware->process($request, $this);
-		} else {
+		if ($middleware === null) {
 			return $this->dispatcher();
 		}
+		$this->offset++;
+		return $middleware->process($request, $this);
 	}
 
 
@@ -103,10 +83,10 @@ abstract class Handler implements RequestHandlerInterface
 	public function dispatcher(): ResponseInterface
 	{
 		$response = call_user_func($this->handler, ...$this->params);
-		if ($response instanceof ResponseInterface) {
-			return $response;
+		if (!($response instanceof ResponseInterface)) {
+			$response = $this->transferToResponse($response);
 		}
-		return $this->transferToResponse($response);
+		return $response;
 	}
 
 
