@@ -140,17 +140,16 @@ class RouterCollector implements \ArrayAccess, \IteratorAggregate
 		$end = $this->methods[$method];
 
 		$handler = new Handler($path, $closure, $middlewares);
-		$item = $path;
 
 		/** @var TreeLeafInterface $leaf */
-		$leaf = new ($end::class)($item);
-		$leaf->setPath($item);
+		$leaf = new ($end::class)($path);
+		$leaf->setPath($path);
 		if (!$end->hasLeaf()) {
-			$end = $end->addLeaf($item, $leaf);
+			$end = $end->addLeaf($path, $leaf);
 		} else {
-			$search = $end->searchLeaf($item);
+			$search = $end->searchLeaf($path);
 			if ($search == null) {
-				$end = $end->addLeaf($item, $leaf);
+				$end = $end->addLeaf($path, $leaf);
 			} else {
 				$end = $search;
 			}
