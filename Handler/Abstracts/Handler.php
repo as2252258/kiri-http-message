@@ -73,7 +73,7 @@ abstract class Handler implements RequestHandlerInterface
 			return $this->dispatcher();
 		}
 		$this->offset++;
-		return $middleware->process($request, $this);
+		return di($middleware)->process($request, $this);
 	}
 
 

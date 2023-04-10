@@ -319,7 +319,7 @@ class RouterCollector implements \ArrayAccess, \IteratorAggregate
 	 * @param string $path
 	 * @param string $method
 	 * @return Handler|int|null
-	 * @throws ReflectionException|Kiri\Exception\ConfigException
+	 * @throws ReflectionException
 	 */
 	public function find(string $path, string $method): Handler|int|null
 	{

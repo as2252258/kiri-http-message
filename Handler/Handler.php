@@ -47,9 +47,9 @@ class Handler
 	 */
 	private function resetMiddlewares(array $middlewares): array
 	{
-		foreach ($middlewares as $key => $middleware) {
-			$middlewares[$key] = di($middleware);
-		}
+//		foreach ($middlewares as $key => $middleware) {
+//			$middlewares[$key] = di($middleware);
+//		}
 		return $middlewares;
 	}
 
