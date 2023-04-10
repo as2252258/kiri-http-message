@@ -139,19 +139,22 @@ class RouterCollector implements \ArrayAccess, \IteratorAggregate
 	{
 		$end = $this->methods[$method];
 
-		$handler = new Handler($path, $closure, $middlewares);
+		$json = str_split($path, 4);
 
-		/** @var TreeLeafInterface $leaf */
-		$leaf = new ($end::class)($path);
-		$leaf->setPath($path);
-		if (!$end->hasLeaf()) {
-			$end = $end->addLeaf($path, $leaf);
-		} else {
-			$search = $end->searchLeaf($path);
-			if ($search == null) {
-				$end = $end->addLeaf($path, $leaf);
+		$handler = new Handler($path, $closure, $middlewares);
+		foreach ($json as $item) {
+			/** @var TreeLeafInterface $leaf */
+			$leaf = new ($end::class)($item);
+			$leaf->setPath($item);
+			if (!$end->hasLeaf()) {
+				$end = $end->addLeaf($item, $leaf);
 			} else {
-				$end = $search;
+				$search = $end->searchLeaf($item);
+				if ($search == null) {
+					$end = $end->addLeaf($item, $leaf);
+				} else {
+					$end = $search;
+				}
 			}
 		}
 		$end->setHandler($handler);
@@ -169,9 +172,12 @@ class RouterCollector implements \ArrayAccess, \IteratorAggregate
 	{
 		$parent = $this->methods[$method];
 
-		$parent = $parent->searchLeaf($path);
-		if ($parent === null) {
-			return $this->NotFundHandler($path);
+		$string = str_split($path, 4);
+		foreach ($string as $item) {
+			$parent = $parent->searchLeaf($item);
+			if ($parent === null) {
+				return $this->NotFundHandler($path);
+			}
 		}
 		return $parent->getHandler();
 	}
