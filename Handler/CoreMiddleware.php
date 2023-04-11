@@ -28,9 +28,6 @@ class CoreMiddleware extends Middleware
 		$requestMethod = $request->getAccessControlRequestMethod();
 		$allowHeaders = $request->getAccessControlAllowHeaders();
 
-		if (empty($requestMethod)) $requestMethod = '*';
-		if (empty($allowHeaders)) $allowHeaders = '*';
-
 		$this->response->withAccessControlAllowOrigin('*')->withAccessControlRequestMethod($requestMethod)
 			->withAccessControlAllowHeaders($allowHeaders);
 
