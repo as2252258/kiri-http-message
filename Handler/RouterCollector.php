@@ -114,7 +114,7 @@ class RouterCollector implements \ArrayAccess, \IteratorAggregate
 			$route = $this->_splicing_routing($route);
 			$middlewares = Kiri\Abstracts\Config::get('request.middlewares', []);
 			if ($closure instanceof Closure) {
-				$middlewares = [...$middlewares, ...$this->_getRouteMiddlewares()];
+				$middlewares = $this->_getRouteMiddlewares($middlewares);
 			} else if (is_string($closure)) {
 				$this->_route_analysis($closure);
 			}
@@ -211,10 +211,11 @@ class RouterCollector implements \ArrayAccess, \IteratorAggregate
 
 
 	/**
+	 * @param array $middlewares
 	 * @return array
 	 * @throws Exception
 	 */
-	private function _getRouteMiddlewares(): array
+	private function _getRouteMiddlewares(array $middlewares = []): array
 	{
 		$middleware = array_column($this->groupTack, 'middleware');
 		if (count($middleware = array_filter($middleware)) > 0) {
@@ -226,11 +227,11 @@ class RouterCollector implements \ArrayAccess, \IteratorAggregate
 					if (!in_array(MiddlewareInterface::class, class_implements($item, true))) {
 						throw new Exception("middleware handler must instance MiddlewareInterface::class");
 					}
-					$middleware[] = $item;
+					$middlewares[] = $item;
 				}
 			}
 		}
-		return $middleware;
+		return $middlewares;
 	}
 
 
