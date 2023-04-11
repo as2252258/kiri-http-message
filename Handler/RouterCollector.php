@@ -114,7 +114,7 @@ class RouterCollector implements \ArrayAccess, \IteratorAggregate
 			$route = $this->_splicing_routing($route);
 			$middlewares = Kiri\Abstracts\Config::get('request.middlewares', []);
 			if ($closure instanceof Closure) {
-				$middlewares = $this->_getRouteMiddlewares();;
+				$middlewares = [...$middlewares, ...$this->_getRouteMiddlewares()];
 			} else if (is_string($closure)) {
 				$this->_route_analysis($closure);
 			}
