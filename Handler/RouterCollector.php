@@ -24,6 +24,11 @@ use Throwable;
 use Traversable;
 use Kiri\Annotation\Route\RequestMethod;
 
+
+const REQUEST_METHODS = [
+	'PUT' => new MethodPut()
+];
+
 /**
  *
  */
@@ -32,6 +37,9 @@ class RouterCollector implements \ArrayAccess, \IteratorAggregate
 
 
 	private array $_item = [];
+
+
+	private array $reflex = [];
 
 
 	/**

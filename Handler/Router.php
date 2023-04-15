@@ -140,10 +140,9 @@ class Router
 	/**
 	 * @param array|RequestMethod $methods
 	 * @param string $route
-	 * @param string|Closure $handler
-	 * @throws
+	 * @param array|string|Closure $handler
 	 */
-	public static function addRoute(array|RequestMethod $methods, string $route, string|Closure $handler): void
+	public static function addRoute(array|RequestMethod $methods, string $route, array|string|Closure $handler): void
 	{
 		$router = Kiri::getDi()->get(DataGrip::class)->get(static::$type);
 		if ($methods instanceof RequestMethod) {

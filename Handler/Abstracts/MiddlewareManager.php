@@ -27,10 +27,10 @@ class MiddlewareManager extends Component
 	/**
 	 * @param $class
 	 * @param $method
-	 * @param array|string|null $middlewares
+	 * @param array|string|object $middlewares
 	 * @return bool
 	 */
-	public static function add($class, $method, array|string|null $middlewares): bool
+	public static function add($class, $method, array|string|object $middlewares): bool
 	{
 		[$class, $method] = static::setDefault($class, $method);
 		if (empty($middlewares)) {
